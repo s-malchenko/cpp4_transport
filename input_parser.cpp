@@ -76,9 +76,10 @@ Coordinates ParseCoordinates(string_view &src)
     return {first, second};
 }
 
-void ParseStopDistances(string_view &src, string_view mainStop, DistanceTable &table)
+unordered_map<string, unsigned int> ParseStopDistances(string_view &src)
 {
     TrimChars(src, " ,\n");
+    unordered_map<string, unsigned int> result;
 
     while (src.size())
     {
@@ -87,9 +88,11 @@ void ParseStopDistances(string_view &src, string_view mainStop, DistanceTable &t
         TrimChars(distStr, "m");
         unsigned long distance = stoul(string(distStr));
         GetPart(part); // remove "to " part
-        table[string(mainStop)][string(part)] = distance;
+        result[string(part)] = distance;
         TrimChars(src, " ,\n");
     }
+
+    return result;
 }
 
 }

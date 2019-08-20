@@ -34,7 +34,7 @@ void TransportProcessor::ProcessDatabaseRequest(const string &request)
         auto [latitude, longitude] = ParseCoordinates(line);
         Coordinates site{latitude, longitude};
         _stopsBase.insert(make_pair(move(name), BusStop{name, site}));
-        ParseStopDistances(line, arg, _distances);
+        // ParseStopDistances(line, arg, _distances);
     }
 }
 

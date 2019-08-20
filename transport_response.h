@@ -5,12 +5,6 @@
 #include <string_view>
 #include <set>
 
-enum ResponseType
-{
-    BUS,
-    STOP,
-};
-
 class TransportResponse
 {
 public:
@@ -62,4 +56,3 @@ public:
 private:
     std::set<std::string_view> _buses;
 };
-

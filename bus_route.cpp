@@ -9,7 +9,7 @@ void BusRoute::AssignStops(std::vector<std::string_view>::const_iterator first,
 {
     for (auto it = first; it != last; it = next(it))
     {
-        auto stop = std::string(*it);
+        auto stop = string(*it);
         auto [stopIt, inserted] = _uniqueStops.insert(move(stop));
         _routeStops.push_back(&(*stopIt));
     }

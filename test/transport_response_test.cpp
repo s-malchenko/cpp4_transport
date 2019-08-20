@@ -38,4 +38,3 @@ void TransportResponseTest_StopProceed()
     TEST_PROCEED_RESPONSE(response,
                           "Stop Pyater ochka: buses bus1 bus3 the coolest bus\n");
 }
-
