@@ -9,6 +9,7 @@ add_executable( transport
                 input_parser.cpp
                 transport_processor.cpp
                 transport_response.cpp
+                transport_request.cpp
                 test/bus_route_test.cpp
                 test/bus_stop_test.cpp
                 test/input_parser_test.cpp
