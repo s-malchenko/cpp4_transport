@@ -130,9 +130,9 @@ void BusRouteTest_GetUniqueStopsCount()
 {
     BusRouteTest busRing2("3", true);
     vector<string_view> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
-    ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 0);
+    ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 0u);
     busRing2.AssignStops(stops.begin(), stops.end());
-    ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 2);
+    ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 2u);
 }
 
 void BusRouteTest_GetStopsCount()
@@ -140,13 +140,13 @@ void BusRouteTest_GetStopsCount()
     vector<string_view> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
 
     BusRouteTest busNotRing("1");
-    ASSERT_EQUAL(busNotRing.GetStopsCount(), 0);
+    ASSERT_EQUAL(busNotRing.GetStopsCount(), 0u);
     busNotRing.AssignStops(stops.begin(), stops.end());
-    ASSERT_EQUAL(busNotRing.GetStopsCount(), 7);
+    ASSERT_EQUAL(busNotRing.GetStopsCount(), 7u);
 
     BusRouteTest busRing2("3", true);
     busRing2.AssignStops(stops.begin(), stops.end());
-    ASSERT_EQUAL(busRing2.GetStopsCount(), 5);
+    ASSERT_EQUAL(busRing2.GetStopsCount(), 5u);
 }
 
 #define CHECK_BUSES_FOR_STOP(base, stop, buses) \
