@@ -99,15 +99,12 @@ using namespace Json;
 
 vector<string> JsonParser::GetDataRequests(istream &in) const
 {
-    int i;
-    in >> i;
-    return {};
+    return splitJson(in);
 }
+
 vector<string> JsonParser::GetInfoRequests(istream &in) const
 {
-    int i;
-    in >> i;
-    return {};
+    return splitJson(in);
 }
 unique_ptr<TransportRequest> JsonParser::ParseDataRequest(const string &str) const
 {
@@ -169,4 +166,45 @@ unique_ptr<TransportRequest> JsonParser::ParseInfoRequest(const string &str) con
 void JsonParser::PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const
 {
     out << response.get() << endl;
+}
+
+std::vector<std::string> JsonParser::splitJson(std::istream &in) const
+{
+    int bracketsCount = 0;
+    string req;
+    vector<string> result;
+    getline(in, req, '[');
+    req.clear();
+
+    while(in)
+    {
+        char c = in.get();
+
+        if (c == '{')
+        {
+            ++bracketsCount;
+        }
+
+        if (bracketsCount > 0)
+        {
+            req.push_back(c);
+        }
+
+        if (c == '}')
+        {
+            --bracketsCount;
+
+            if (bracketsCount == 0)
+            {
+                result.push_back(move(req));
+            }
+        }
+
+        if (bracketsCount <= 0 && c == ']')
+        {
+            break;
+        }
+    }
+
+    return result;
 }

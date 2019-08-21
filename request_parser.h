@@ -43,5 +43,5 @@ public:
     virtual std::unique_ptr<TransportRequest> ParseInfoRequest(const std::string &str) const override;
     virtual void PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const override;
 private:
-    mutable std::vector<Json::Document> _docs;
+    std::vector<std::string> splitJson(std::istream &in) const;
 };
