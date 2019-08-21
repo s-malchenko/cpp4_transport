@@ -69,7 +69,7 @@ void BusRouteTest_GetDistanceStraight()
     addStopToBase(base, "Biryulyovo Tovarnaya", 55.592028, 37.653656);
     addStopToBase(base, "Biryulyovo Passazhirskaya", 55.580999, 37.659164);
 
-    vector<string_view> stops = {"stop1", "stop2", "stop1", "stop2"};
+    vector<string> stops = {"stop1", "stop2", "stop1", "stop2"};
     TEST_GET_DISTANCE(stops, false, base, PI * EARTH_RADIUS * 3 / 2);
 
     stops = {"stop1", "stop2", "stop1", "stop2", "stop1"};
@@ -85,7 +85,7 @@ void BusRouteTest_GetDistanceStraight()
     TEST_GET_DISTANCE(stops, true, base, 4371.02);
 }
 
-static inline void addTableEntry(DistanceTable &table, string_view s1, string_view s2, unsigned int lenTo, unsigned int lenFrom)
+static inline void addTableEntry(DistanceTable &table, string s1, string s2, unsigned int lenTo, unsigned int lenFrom)
 {
     table[string(s1)][string(s2)] = lenTo;
     table[string(s2)][string(s1)] = lenFrom;
@@ -107,7 +107,7 @@ void BusRouteTest_GetDistance()
     addStopToBase(stopsBase, "stop4", 0, 0);
     AssignDistances(distances, stopsBase);
 
-    vector<string_view> stops = {"stop1", "stop2", "stop1", "stop2"};
+    vector<string> stops = {"stop1", "stop2", "stop1", "stop2"};
     TEST_GET_DISTANCE(stops, false, stopsBase, 900u);
 
     stops = {"stop1", "stop2", "stop3", "stop1"};
@@ -173,7 +173,7 @@ Stop Biryulyovo Zapadnoye: buses 256 828
     addStopToBase(base, "Biryulyovo Passazhirskaya", 55.580999, 37.659164);
     AssignDistances(distances, base);
 
-    vector<string_view> stops = {"Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye"};
+    vector<string> stops = {"Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye"};
     BusRouteTest bus("1", true);
     bus.AssignStops(stops);
     ASSERT(doublesEqual(bus.GetCurvature(base), 1.361239));
@@ -182,7 +182,7 @@ Stop Biryulyovo Zapadnoye: buses 256 828
 void BusRouteTest_GetUniqueStopsCount()
 {
     BusRouteTest busRing2("3", true);
-    vector<string_view> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
+    vector<string> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
     ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 0u);
     busRing2.AssignStops(stops.begin(), stops.end());
     ASSERT_EQUAL(busRing2.GetUniqueStopsCount(), 2u);
@@ -190,7 +190,7 @@ void BusRouteTest_GetUniqueStopsCount()
 
 void BusRouteTest_GetStopsCount()
 {
-    vector<string_view> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
+    vector<string> stops = {"stop 1", "stop 2", "stop 1", "stop 2"};
 
     BusRouteTest busNotRing("1");
     ASSERT_EQUAL(busNotRing.GetStopsCount(), 0u);
@@ -223,7 +223,7 @@ void BusRouteTest_FillStopsInfo()
     addStopToBase(base, "Biryulyovo 2", 55.587999, 37.659164);
 
     vector<BusRouteTest> testBuses;
-    vector<string_view> stops = {"stop1", "stop2", "stop1", "stop2"};
+    vector<string> stops = {"stop1", "stop2", "stop1", "stop2"};
 
     stops = {"stop1", "stop2", "stop1", "stop2", "stop1"};
     testBuses.push_back(string("1"));
@@ -254,7 +254,7 @@ void BusRouteTest_FillStopsInfo()
         i.FillStopsInfo(base);
     }
 
-    set<string_view> expected = {"1", "2"};
+    set<string> expected = {"1", "2"};
     CHECK_BUSES_FOR_STOP(base, "stop1", expected);
     expected = {"1", "2", "44"};
     CHECK_BUSES_FOR_STOP(base, "stop2", expected);

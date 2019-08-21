@@ -41,8 +41,8 @@ void BusStopTest_Distance()
 
 void BusStopTest_Buses()
 {
-    vector<string_view> src = {"1", "2", "3"};
-    set<string_view> expected = {"1", "2", "3"};
+    vector<string> src = {"1", "2", "3"};
+    set<string> expected = {"1", "2", "3"};
     TEST_BUSES(src, expected);
     src = {"3", "2", "1", "2", "1"};
     TEST_BUSES(src, expected);

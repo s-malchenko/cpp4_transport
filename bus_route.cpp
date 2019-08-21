@@ -4,8 +4,8 @@ using namespace std;
 
 BusRoute::BusRoute(const std::string &num, bool ring) : _number(num), _ring(ring) {}
 
-void BusRoute::AssignStops(std::vector<std::string_view>::const_iterator first,
-                           std::vector<std::string_view>::const_iterator last)
+void BusRoute::AssignStops(std::vector<std::string>::const_iterator first,
+                           std::vector<std::string>::const_iterator last)
 {
     for (auto it = first; it != last; it = next(it))
     {
@@ -20,7 +20,7 @@ void BusRoute::AssignStops(std::vector<std::string_view>::const_iterator first,
     }
 }
 
-void BusRoute::AssignStops(const std::vector<std::string_view> &stops)
+void BusRoute::AssignStops(const std::vector<std::string> &stops)
 {
     AssignStops(stops.begin(), stops.end());
 }

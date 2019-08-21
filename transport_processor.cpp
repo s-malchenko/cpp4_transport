@@ -12,17 +12,17 @@ _parser(parser)
 {
 }
 
-void TransportProcessor::ReadDataRequests(const vector<string> &requests)
+void TransportProcessor::ReadDataRequests(istream &in)
 {
-    for (const auto &i : requests)
+    for (const auto &i : _parser->GetDataRequests(in))
     {
         _processor.AddRequest(_parser->ParseDataRequest(i));
     }
 }
 
-void TransportProcessor::ReadInfoRequests(const vector<string> &requests)
+void TransportProcessor::ReadInfoRequests(istream &in)
 {
-    for (const auto &i : requests)
+    for (const auto &i : _parser->GetInfoRequests(in))
     {
         _processor.AddRequest(_parser->ParseInfoRequest(i));
     }
@@ -32,42 +32,15 @@ void TransportProcessor::PrintResponses()
 {
     for (auto &i : _processor.Proceed())
     {
-        if (!i)
-        {
-            cout << __FILE__ << ":" << __LINE__ << endl;
-        }
-
         _parser->PrintResponse(move(i), _out);
     }
 }
 
 void RunTransportProcessor(shared_ptr<RequestParser> parser, istream &in, ostream &out)
 {
-    string request;
-    int num;
     TransportProcessor tp(out, parser);
 
-    in >> num;
-    getline(in, request);
-    vector<string> dataRequests;
-    vector<string> infoRequests;
-
-    for (int i = 0; i < num; ++i)
-    {
-        getline(in, request);
-        dataRequests.push_back(move(request));
-    }
-
-    in >> num;
-    getline(in, request);
-
-    for (int i = 0; i < num; ++i)
-    {
-        getline(in, request);
-        infoRequests.push_back(move(request));
-    }
-
-    tp.ReadDataRequests(dataRequests);
-    tp.ReadInfoRequests(infoRequests);
+    tp.ReadDataRequests(in);
+    tp.ReadInfoRequests(in);
     tp.PrintResponses();
 }

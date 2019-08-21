@@ -41,12 +41,12 @@ void TrimChars(string_view &src, string_view chars)
     }
 }
 
-vector<string_view> ParseStops(string_view &src)
+vector<string> ParseStops(string_view &src)
 {
     TrimChars(src, " \n");
     static const string_view possibleDelims(">-");
     char delim = src[src.find_first_of(possibleDelims)];
-    vector<string_view> result;
+    vector<string> result;
 
     do
     {
@@ -56,7 +56,7 @@ vector<string_view> ParseStops(string_view &src)
 
         if (stop.size() > 0)
         {
-            result.push_back(stop);
+            result.push_back(string(stop));
         }
     }
     while (src.size() > 0);

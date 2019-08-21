@@ -1,4 +1,5 @@
 #pragma once
 
 void RequestParserTest_Data();
-void RequestParserTest_Info();
+void RequestParserTest_DataJson();
+void RequestParserTest_InfoJson();

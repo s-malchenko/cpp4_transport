@@ -39,12 +39,12 @@ BusStop::BusStop(string &&n, Coordinates l) : name(move(n)), location(l)
 {
 }
 
-void BusStop::AddBus(std::string_view bus)
+void BusStop::AddBus(string bus)
 {
     _buses.insert(bus);
 }
 
-const std::set<std::string_view> &BusStop::GetBuses() const
+const set<string> &BusStop::GetBuses() const
 {
     return _buses;
 }

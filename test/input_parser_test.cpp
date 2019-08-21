@@ -42,7 +42,7 @@ void InputParserTest_GetPart()
 
 void InputParserTest_ParseStops()
 {
-    vector<string_view> expected;
+    vector<string> expected;
     string_view src(" Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye");
     expected = {"Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye"};
     TEST_PARSE_STOPS(src, expected);

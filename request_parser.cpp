@@ -1,8 +1,38 @@
 #include "request_parser.h"
 #include "input_parser.h"
 
+#include <sstream>
+
 using namespace std;
 using namespace InputParser;
+
+vector<string> StandardParser::GetDataRequests(istream &in) const
+{
+    return getRequests(in);
+}
+
+vector<string> StandardParser::GetInfoRequests(istream &in) const
+{
+    return getRequests(in);
+}
+
+vector<string> StandardParser::getRequests(istream &in) const
+{
+    size_t num;
+    string request;
+    vector<string> result;
+
+    in >> num;
+    getline(in, request);
+
+    for (size_t i = 0; i < num; ++i)
+    {
+        getline(in, request);
+        result.push_back(move(request));
+    }
+
+    return result;
+}
 unique_ptr<TransportRequest> StandardParser::ParseDataRequest(const std::string &str) const
 {
     string_view line(str);
@@ -63,4 +93,80 @@ void StandardParser::PrintResponse(unique_ptr<TransportResponse> response, ostre
     {
         response->Proceed(out);
     }
+}
+
+using namespace Json;
+
+vector<string> JsonParser::GetDataRequests(istream &in) const
+{
+    int i;
+    in >> i;
+    return {};
+}
+vector<string> JsonParser::GetInfoRequests(istream &in) const
+{
+    int i;
+    in >> i;
+    return {};
+}
+unique_ptr<TransportRequest> JsonParser::ParseDataRequest(const string &str) const
+{
+    stringstream ss(str);
+    auto doc = Load(ss);
+    const auto &req = doc.GetRoot().AsMap();
+    unique_ptr<TransportRequest> result;
+
+    if (req.at("type").AsString() == "Bus")
+    {
+        auto bus = make_unique<BusRequest>(req.at("name").AsString());
+        vector<string> stops;
+
+        for (const auto &i : req.at("stops").AsArray())
+        {
+            stops.push_back(i.AsString());
+        }
+
+        bus->Stops(move(stops));
+        bus->Roundtrip(req.at("is_roundtrip").AsBool());
+        result = move(bus);
+    }
+    else
+    {
+        auto stop = make_unique<StopRequest>(req.at("name").AsString());
+        stop->Site({req.at("latitude").AsDouble(),
+                    req.at("longitude").AsDouble()
+                   });
+        unordered_map<string, unsigned int> dists;
+
+        for (const auto &[k, v] : req.at("road_distances").AsMap())
+        {
+            dists[k] = v.AsInt();
+        }
+
+        stop->Distances(move(dists));
+        result = move(stop);
+    }
+
+    return move(result);
+}
+unique_ptr<TransportRequest> JsonParser::ParseInfoRequest(const string &str) const
+{
+    stringstream ss(str);
+    auto doc = Load(ss);
+    const auto &req = doc.GetRoot().AsMap();
+
+    if (req.at("type").AsString() == "Bus")
+    {
+        return make_unique<InfoRequest>(RequestCmd::BUS,
+                                        req.at("name").AsString(),
+                                        req.at("id").AsInt());
+    }
+
+    return make_unique<InfoRequest>(RequestCmd::STOP,
+                                        req.at("name").AsString(),
+                                        req.at("id").AsInt());
+}
+void JsonParser::PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const
+{
+    out << response.get() << endl;
 }

@@ -30,7 +30,7 @@ BusRequest::BusRequest(const string &name, unsigned int id) :
 {
 }
 
-BusRequest &BusRequest::Stops(std::vector<std::string_view> stops)
+BusRequest &BusRequest::Stops(std::vector<std::string> stops)
 {
     _stops = move(stops);
     return *this;
@@ -42,7 +42,7 @@ BusRequest &BusRequest::Roundtrip(bool roundtrip)
     return *this;
 }
 
-vector<string_view> &BusRequest::Stops() { return _stops; }
+vector<string> &BusRequest::Stops() { return _stops; }
 bool BusRequest::Roundtrip() const { return _roundtrip; }
 
 StopRequest::StopRequest(const std::string &name, unsigned int id) :

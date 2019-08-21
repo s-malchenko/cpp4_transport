@@ -4,7 +4,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -13,9 +12,9 @@ class BusRoute
 {
 public:
     BusRoute(const std::string &num, bool ring = false);
-    void AssignStops(std::vector<std::string_view>::const_iterator first,
-                     std::vector<std::string_view>::const_iterator last);
-    void AssignStops(const std::vector<std::string_view> &stops);
+    void AssignStops(std::vector<std::string>::const_iterator first,
+                     std::vector<std::string>::const_iterator last);
+    void AssignStops(const std::vector<std::string> &stops);
     size_t GetStopsCount() const;
     size_t GetUniqueStopsCount() const;
     const std::unordered_set<std::string> &GetUniqueStops() const;

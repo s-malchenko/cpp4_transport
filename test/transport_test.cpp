@@ -24,7 +24,8 @@ void TestTransport()
     RUN_TEST(tr, BusRouteTest_GetStopsCount);
     RUN_TEST(tr, BusRouteTest_FillStopsInfo);
     RUN_TEST(tr, RequestParserTest_Data);
-    RUN_TEST(tr, RequestParserTest_Info);
+    RUN_TEST(tr, RequestParserTest_DataJson);
+    RUN_TEST(tr, RequestParserTest_InfoJson);
     RUN_TEST(tr, RequestProcessorTest_Smoke);
     RUN_TEST(tr, TransportProcessorTest_Run);
     RUN_TEST(tr, TransportResponseTest_BusProceed);

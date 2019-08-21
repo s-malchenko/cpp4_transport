@@ -37,7 +37,7 @@ void TransportResponseTest_StopProceed()
     TEST_PROCEED_RESPONSE(response,
                           "Stop 99: no buses\n");
 
-    set<string_view> buses = {"bus3", "bus1", "the coolest bus"};
+    set<string> buses = {"bus3", "bus1", "the coolest bus"};
     response = StopResponse("Pyater ochka").Buses(buses);
     TEST_PROCEED_RESPONSE(response,
                           "Stop Pyater ochka: buses bus1 bus3 the coolest bus\n");

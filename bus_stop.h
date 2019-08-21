@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <set>
-#include <string_view>
 #include <unordered_map>
 
 static const long double PI = 3.1415926535;
@@ -30,12 +29,12 @@ struct BusStop
     Coordinates location;
     BusStop(const std::string &n = "", Coordinates l = {});
     BusStop(std::string &&n, Coordinates l = {});
-    void AddBus(std::string_view bus);
-    const std::set<std::string_view> &GetBuses() const;
+    void AddBus(std::string bus);
+    const std::set<std::string> &GetBuses() const;
     Distance DistanceTo(const BusStop &other) const;
     void AssignDistances(std::unordered_map<std::string, unsigned int> &&distances);
 private:
-    std::set<std::string_view> _buses;
+    std::set<std::string> _buses;
     std::unordered_map<std::string, unsigned int> _distances;
 };
 

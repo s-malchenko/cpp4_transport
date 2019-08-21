@@ -14,7 +14,7 @@ using namespace std;
 
 string_view GetPart(string_view &src, char delim = ' ');
 void TrimChars(string_view &src, string_view chars);
-vector<string_view> ParseStops(string_view &src);
+vector<string> ParseStops(string_view &src);
 Coordinates ParseCoordinates(string_view &src);
 unordered_map<string, unsigned int> ParseStopDistances(string_view &src);
 

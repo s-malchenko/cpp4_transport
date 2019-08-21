@@ -2,7 +2,6 @@
 #include <map>
 #include <ostream>
 #include <string>
-#include <string_view>
 #include <set>
 
 class TransportResponse
@@ -53,8 +52,8 @@ public:
     virtual ~StopResponse() = default;
     virtual void Proceed(std::ostream &out) const override;
     virtual void ProceedJSON(std::ostream &out) const override;
-    StopResponse& Buses(std::set<std::string_view> buses);
-    const std::set<std::string_view> &Buses() const;
+    StopResponse& Buses(std::set<std::string> buses);
+    const std::set<std::string> &Buses() const;
 private:
-    std::set<std::string_view> _buses;
+    std::set<std::string> _buses;
 };

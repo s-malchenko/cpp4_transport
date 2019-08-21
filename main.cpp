@@ -1,11 +1,11 @@
-// #include "transport_test.h"
+#include "transport_test.h"
 #include "transport_processor.h"
 
 using namespace std;
 
 int main()
 {
-    // TestTransport();
+    TestTransport();
     RunTransportProcessor(make_shared<StandardParser>());
     return 0;
 }

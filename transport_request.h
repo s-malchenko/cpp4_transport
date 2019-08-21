@@ -53,12 +53,12 @@ class BusRequest : public DataRequest
 public:
     BusRequest(const std::string &name, unsigned int id = 0);
     virtual ~BusRequest() = default;
-    BusRequest &Stops(std::vector<std::string_view> stops);
+    BusRequest &Stops(std::vector<std::string> stops);
     BusRequest &Roundtrip(bool roundtrip);
-    std::vector<std::string_view> &Stops();
+    std::vector<std::string> &Stops();
     bool Roundtrip() const;
 private:
-    std::vector<std::string_view> _stops;
+    std::vector<std::string> _stops;
     bool _roundtrip;
 };
 

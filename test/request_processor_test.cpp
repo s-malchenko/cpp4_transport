@@ -22,7 +22,7 @@ static inline void addStopRequest(RequestProcessor &rp,
 static inline void addBusRequest(RequestProcessor &rp,
                                  const string &name,
                                  bool round,
-                                 vector<string_view> stops,
+                                 vector<string> stops,
                                  unsigned int id = 0)
 {
     auto ptr = make_unique<BusRequest>(name, id);
@@ -101,7 +101,7 @@ void RequestProcessorTest_Smoke()
     CHECK_BUS_RESPONSE(responses[1], false, "750", 5u, 3u, 27600u, 1.318084);
     CHECK_BUS_RESPONSE(responses[2], true, "751", 0u, 0u, 0u, 1);
 
-    set<string_view> testBuses;
+    set<string> testBuses;
     CHECK_STOP_RESPONSE(responses[3], true, "Samara", testBuses);
     CHECK_STOP_RESPONSE(responses[4], false, "Prazhskaya", testBuses);
     testBuses = {"256", "828"};
