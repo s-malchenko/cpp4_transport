@@ -13,6 +13,8 @@ public:
         _error(error),
         _id(id) {}
     virtual ~TransportResponse() = default;
+    const std::string &Name() const { return _name; }
+    bool Error() const { return _error; }
     virtual void Proceed(std::ostream &out) const  = 0;
     virtual void ProceedJSON(std::ostream &out) const = 0;
 protected:

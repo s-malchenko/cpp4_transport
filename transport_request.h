@@ -1,4 +1,5 @@
 #pragma once
+#include "bus_stop.h"
 
 #include <string>
 #include <string_view>
@@ -24,6 +25,7 @@ public:
     virtual ~TransportRequest() = default;
     RequestType Type() const;
     RequestCmd Cmd() const;
+    unsigned int Id() const;
     const std::string &Name() const;
 private:
     RequestType _type;
@@ -66,13 +68,10 @@ public:
     StopRequest(const std::string &name, unsigned int id = 0);
     virtual ~StopRequest() = default;
     StopRequest &Distances(std::unordered_map<std::string, unsigned int> dist);
-    StopRequest &Lat(long double value);
-    StopRequest &Lon(long double value);
+    StopRequest &Site(Coordinates value);
     std::unordered_map<std::string, unsigned int> &Distances();
-    long double Lat() const;
-    long double Lon() const;
+    Coordinates Site() const;
 private:
-    long double _latitude;
-    long double _longitude;
+    Coordinates _site;
     std::unordered_map<std::string, unsigned int> _distances;
 };

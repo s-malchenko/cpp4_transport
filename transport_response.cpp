@@ -104,7 +104,7 @@ void StopResponse::ProceedJSON(std::ostream &out) const
 
 StopResponse &StopResponse::Buses(std::set<string_view> buses)
 {
-    _buses = buses;
+    _buses = move(buses);
     return *this;
 }
 

@@ -20,8 +20,8 @@ public:
     size_t GetUniqueStopsCount() const;
     const std::unordered_set<std::string> &GetUniqueStops() const;
     void FillStopsInfo(StopsTable &stopsBase) const;
-    int GetDistance(const StopsTable &stopsBase) const;
-    double GetCurvature(const StopsTable &stopsBase) const;
+    unsigned int GetDistance(const StopsTable &stopsBase) const;
+    long double GetCurvature(const StopsTable &stopsBase) const;
     const std::string &GetNumber() const;
 protected:
     const std::string _number;

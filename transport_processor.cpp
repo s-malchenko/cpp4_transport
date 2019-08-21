@@ -1,117 +1,62 @@
 #include "transport_processor.h"
-#include "input_parser.h"
 
 #include <iomanip>
 #include <iterator>
+#include <utility>
 
 using namespace std;
-using namespace InputParser;
 
-TransportProcessor::TransportProcessor(ostream &out) : _out(out) {}
-
-void TransportProcessor::ProcessDatabaseRequest(const string &request)
+TransportProcessor::TransportProcessor(ostream &out, shared_ptr<RequestParser> parser) :
+_out(out),
+_parser(parser)
 {
-    string_view line(request);
-    string_view cmd = GetPart(line);
-    string_view arg = GetPart(line, ':');
+}
 
-    if (cmd == "Bus")
+void TransportProcessor::ReadDataRequests(const vector<string> &requests)
+{
+    for (const auto &i : requests)
     {
-        bool ring = false;
-
-        if (line[line.find_first_of(">-")] == '>')
-        {
-            ring = true;
-        }
-
-        auto stops = ParseStops(line);
-        string num(arg);
-        _busesBase.insert({num, {num, ring}}).first->second.AssignStops(stops.begin(), stops.end());
-    }
-    else if (cmd == "Stop")
-    {
-        string name(arg);
-        auto [latitude, longitude] = ParseCoordinates(line);
-        Coordinates site{latitude, longitude};
-        _stopsBase.insert(make_pair(move(name), BusStop{name, site}));
-        // ParseStopDistances(line, arg, _distances);
+        _processor.AddRequest(_parser->ParseDataRequest(i));
     }
 }
 
-void TransportProcessor::PrepareDatabase()
+void TransportProcessor::ReadInfoRequests(const vector<string> &requests)
 {
-    FillStopsInfo(_busesBase, _stopsBase);
-    AssignDistances(_distances, _stopsBase);
+    for (const auto &i : requests)
+    {
+        _processor.AddRequest(_parser->ParseInfoRequest(i));
+    }
 }
 
-void TransportProcessor::ProcessReadingRequest(const string &request)
+void TransportProcessor::PrintResponses()
 {
-    string_view line(request);
-    auto cmd = GetPart(line);
-    auto arg = string(line);
-
-    if (cmd == "Bus")
+    for (auto &i : _processor.Proceed())
     {
-        auto it = _busesBase.find(arg);
-
-        _out << "Bus " << arg << ": ";
-
-        if (it == _busesBase.end())
+        if (!i)
         {
-            _out << "not found";
+            cout << __FILE__ << ":" << __LINE__ << endl;
         }
-        else
-        {
-            auto &bus = it->second;
-            _out << bus.GetStopsCount() << " stops on route, " <<
-                 bus.GetUniqueStopsCount() << " unique stops, " <<
-                 bus.GetDistance(_stopsBase) << " route length, " <<
-                 setprecision(7) << bus.GetCurvature(_stopsBase) << " curvature";
-        }
+
+        _parser->PrintResponse(move(i), _out);
     }
-    else if (cmd == "Stop")
-    {
-        auto it = _stopsBase.find(arg);
-
-        _out << "Stop " << arg << ": ";
-
-        if (it == _stopsBase.end())
-        {
-            _out << "not found";
-        }
-        else
-        {
-            const auto &buses = it->second.GetBuses();
-
-            if (buses.empty())
-            {
-                _out << "no buses";
-            }
-            else
-            {
-                _out << "buses ";
-
-                for (auto it = buses.begin(); it != buses.end(); it = next(it))
-                {
-                    _out << *it;
-
-                    if (next(it) != buses.end())
-                    {
-                        _out << " ";
-                    }
-                }
-            }
-        }
-    }
-
-    _out << endl;
 }
 
-void RunTransportProcessor(istream &in, ostream &out)
+void RunTransportProcessor(shared_ptr<RequestParser> parser, istream &in, ostream &out)
 {
     string request;
     int num;
-    TransportProcessor tp(out);
+    TransportProcessor tp(out, parser);
+
+    in >> num;
+    getline(in, request);
+    vector<string> dataRequests;
+    vector<string> infoRequests;
+
+    for (int i = 0; i < num; ++i)
+    {
+        getline(in, request);
+        dataRequests.push_back(move(request));
+    }
 
     in >> num;
     getline(in, request);
@@ -119,16 +64,10 @@ void RunTransportProcessor(istream &in, ostream &out)
     for (int i = 0; i < num; ++i)
     {
         getline(in, request);
-        tp.ProcessDatabaseRequest(request);
+        infoRequests.push_back(move(request));
     }
 
-    tp.PrepareDatabase();
-    in >> num;
-    getline(in, request);
-
-    for (int i = 0; i < num; ++i)
-    {
-        getline(in, request);
-        tp.ProcessReadingRequest(request);
-    }
+    tp.ReadDataRequests(dataRequests);
+    tp.ReadInfoRequests(infoRequests);
+    tp.PrintResponses();
 }

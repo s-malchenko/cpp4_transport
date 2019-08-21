@@ -12,6 +12,7 @@ TransportRequest::TransportRequest(RequestType type,
 
 RequestType TransportRequest::Type() const { return _type; }
 RequestCmd TransportRequest::Cmd() const { return _cmd; }
+unsigned int TransportRequest::Id() const { return _id; }
 const string &TransportRequest::Name() const {return _name; }
 
 InfoRequest::InfoRequest(RequestCmd cmd, const string &name, unsigned int id) :
@@ -45,7 +46,7 @@ vector<string_view> &BusRequest::Stops() { return _stops; }
 bool BusRequest::Roundtrip() const { return _roundtrip; }
 
 StopRequest::StopRequest(const std::string &name, unsigned int id) :
-    DataRequest(RequestCmd::BUS, name, id)
+    DataRequest(RequestCmd::STOP, name, id)
 {
 }
 
@@ -55,18 +56,11 @@ StopRequest &StopRequest::Distances(std::unordered_map<std::string, unsigned int
     return *this;
 }
 
-StopRequest &StopRequest::Lat(long double value)
+StopRequest &StopRequest::Site(Coordinates value)
 {
-    _latitude = value;
-    return *this;
-}
-
-StopRequest &StopRequest::Lon(long double value)
-{
-    _longitude = value;
+    _site = value;
     return *this;
 }
 
 std::unordered_map<std::string, unsigned int> &StopRequest::Distances() { return _distances; }
-long double StopRequest::Lat() const { return _latitude; }
-long double StopRequest::Lon() const { return _latitude; }
+Coordinates StopRequest::Site() const { return _site; }

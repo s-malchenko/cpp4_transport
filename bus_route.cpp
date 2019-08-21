@@ -60,22 +60,17 @@ void BusRoute::FillStopsInfo(StopsTable &stopsBase) const
     }
 }
 
-int BusRoute::GetDistance(const StopsTable &stopsBase) const
+unsigned int BusRoute::GetDistance(const StopsTable &stopsBase) const
 {
     if (!_distance)
     {
         _distance = computeDistance(_routeStops.begin(), _routeStops.end(), stopsBase);
     }
 
-    // if (GetCurvature(stopsBase) > 100)
-    // {
-    //     throw 1;
-    // }
-
     return _distance.value().real;
 }
 
-double BusRoute::GetCurvature(const StopsTable &stopsBase) const
+long double BusRoute::GetCurvature(const StopsTable &stopsBase) const
 {
     GetDistance(stopsBase);
     return _distance.value().real / _distance.value().straight;

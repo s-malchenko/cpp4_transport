@@ -1,25 +1,26 @@
 #pragma once
-#include "bus_route.h"
-#include "bus_stop.h"
+
+#include "request_parser.h"
+#include "request_processor.h"
 
 #include <istream>
 #include <ostream>
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 class TransportProcessor
 {
 public:
-    TransportProcessor(std::ostream &out);
-    void ProcessDatabaseRequest(const std::string &request);
-    void PrepareDatabase();
-    void ProcessReadingRequest(const std::string &request);
+    TransportProcessor(std::ostream &out, std::shared_ptr<RequestParser> parser);
+    void ReadDataRequests(const std::vector<std::string> &requests);
+    void ReadInfoRequests(const std::vector<std::string> &requests);
+    void PrintResponses();
 private:
     std::ostream &_out;
-    StopsTable _stopsBase;
-    BusTable _busesBase;
-    DistanceTable _distances;
+    RequestProcessor _processor;
+    std::shared_ptr<RequestParser> _parser;
+
 };
 
-void RunTransportProcessor(std::istream &in = std::cin, std::ostream &out = std::cout);
+void RunTransportProcessor(std::shared_ptr<RequestParser> parser, std::istream &in = std::cin, std::ostream &out = std::cout);

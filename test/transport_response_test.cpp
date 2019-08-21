@@ -21,6 +21,10 @@ void TransportResponseTest_BusProceed()
     response = BusResponse("33").Length(5658).Curvature(1.56).Stops(89).UniqueStops(56);
     TEST_PROCEED_RESPONSE(response,
                           "Bus 33: 89 stops on route, 56 unique stops, 5658 route length, 1.56 curvature\n");
+
+    response = BusResponse("256").Length(5950).Curvature(1.361239).Stops(6).UniqueStops(5);
+    TEST_PROCEED_RESPONSE(response,
+                          "Bus 256: 6 stops on route, 5 unique stops, 5950 route length, 1.361239 curvature\n");
 }
 
 void TransportResponseTest_StopProceed()

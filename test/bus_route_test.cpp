@@ -108,22 +108,75 @@ void BusRouteTest_GetDistance()
     AssignDistances(distances, stopsBase);
 
     vector<string_view> stops = {"stop1", "stop2", "stop1", "stop2"};
-    TEST_GET_DISTANCE(stops, false, stopsBase, 900);
+    TEST_GET_DISTANCE(stops, false, stopsBase, 900u);
 
     stops = {"stop1", "stop2", "stop3", "stop1"};
-    TEST_GET_DISTANCE(stops, true, stopsBase, 5500);
+    TEST_GET_DISTANCE(stops, true, stopsBase, 5500u);
 
     stops = {"stop1", "stop2", "stop3"};
-    TEST_GET_DISTANCE(stops, false, stopsBase, 750);
+    TEST_GET_DISTANCE(stops, false, stopsBase, 750u);
 
     stops = {"stop1", "stop3"};
-    TEST_GET_DISTANCE(stops, true, stopsBase, 5060);
+    TEST_GET_DISTANCE(stops, true, stopsBase, 5060u);
 
     stops = {"stop1", "stop3"};
-    TEST_GET_DISTANCE(stops, false, stopsBase, 5060);
+    TEST_GET_DISTANCE(stops, false, stopsBase, 5060u);
 
     stops = {"stop1", "stop4", "stop3"};
-    TEST_GET_DISTANCE(stops, false, stopsBase, 800);
+    TEST_GET_DISTANCE(stops, false, stopsBase, 800u);
+}
+
+void BusRouteTest_GetCurvature()
+{
+    string inStr = R"(13
+Stop Tolstopaltsevo: 55.611087, 37.20829, 3900m to Marushkino
+Stop Marushkino: 55.595884, 37.209755, 9900m to Rasskazovka
+Bus 256: Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
+Bus 750: Tolstopaltsevo - Marushkino - Rasskazovka
+Stop Rasskazovka: 55.632761, 37.333324
+Stop Biryulyovo Zapadnoye: 55.574371, 37.6517, 7500m to Rossoshanskaya ulitsa, 1800m to Biryusinka, 2400m to Universam
+Stop Biryusinka: 55.581065, 37.64839, 750m to Universam
+Stop Universam: 55.587655, 37.645687, 5600m to Rossoshanskaya ulitsa, 900m to Biryulyovo Tovarnaya
+Stop Biryulyovo Tovarnaya: 55.592028, 37.653656, 1300m to Biryulyovo Passazhirskaya
+Stop Biryulyovo Passazhirskaya: 55.580999, 37.659164, 1200m to Biryulyovo Zapadnoye
+Bus 828: Biryulyovo Zapadnoye > Universam > Rossoshanskaya ulitsa > Biryulyovo Zapadnoye
+Stop Rossoshanskaya ulitsa: 55.595579, 37.605757
+Stop Prazhskaya: 55.611678, 37.603831
+6
+Bus 256
+Bus 750
+Bus 751
+Stop Samara
+Stop Prazhskaya
+Stop Biryulyovo Zapadnoye
+)";
+    string outStr = R"(Bus 256: 6 stops on route, 5 unique stops, 5950 route length, 1.361239 curvature
+Bus 750: 5 stops on route, 3 unique stops, 27600 route length, 1.318084 curvature
+Bus 751: not found
+Stop Samara: not found
+Stop Prazhskaya: no buses
+Stop Biryulyovo Zapadnoye: buses 256 828
+)";
+
+    DistanceTable distances;
+    distances["Biryulyovo Zapadnoye"]["Biryusinka"] = 1800;
+    distances["Biryulyovo Zapadnoye"]["Universam"] = 2400;
+    distances["Biryusinka"]["Universam"] = 750;
+    distances["Universam"]["Biryulyovo Tovarnaya"] = 900;
+    distances["Biryulyovo Tovarnaya"]["Biryulyovo Passazhirskaya"] = 1300;
+    distances["Biryulyovo Passazhirskaya"]["Biryulyovo Zapadnoye"] = 1200;
+    StopsTable base;
+    addStopToBase(base, "Biryulyovo Zapadnoye", 55.574371, 37.6517);
+    addStopToBase(base, "Biryusinka", 55.581065, 37.64839);
+    addStopToBase(base, "Universam", 55.587655, 37.645687);
+    addStopToBase(base, "Biryulyovo Tovarnaya", 55.592028, 37.653656);
+    addStopToBase(base, "Biryulyovo Passazhirskaya", 55.580999, 37.659164);
+    AssignDistances(distances, base);
+
+    vector<string_view> stops = {"Biryulyovo Zapadnoye", "Biryusinka", "Universam", "Biryulyovo Tovarnaya", "Biryulyovo Passazhirskaya", "Biryulyovo Zapadnoye"};
+    BusRouteTest bus("1", true);
+    bus.AssignStops(stops);
+    ASSERT(doublesEqual(bus.GetCurvature(base), 1.361239));
 }
 
 void BusRouteTest_GetUniqueStopsCount()
