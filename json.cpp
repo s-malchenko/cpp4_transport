@@ -1,5 +1,4 @@
 #include "json.h"
-
 using namespace std;
 
 namespace Json
@@ -34,29 +33,9 @@ Node LoadArray(istream &input)
 
 Node LoadNumber(istream &input)
 {
-    int result = 0;
     long double resultDouble = 0;
-    while (isdigit(input.peek()))
-    {
-        result *= 10;
-        result += input.get() - '0';
-    }
-
-    if (input.peek() != '.')
-    {
-        return Node(result);
-    }
-
-    input.get();
-    unsigned int factor = 10;
-
-    while (isdigit(input.peek()))
-    {
-        resultDouble += (input.get() - '0') / factor;
-        factor *= 10;
-    }
-
-    return Node(resultDouble + result);
+    input >> resultDouble;
+    return Node(resultDouble);
 }
 
 Node LoadBool(istream &input)
@@ -65,7 +44,7 @@ Node LoadBool(istream &input)
     input >> str;
     bool value = false;
 
-    if (str == "true")
+    if (str.substr(0, 4) == "true")
     {
         value = true;
     }

@@ -45,11 +45,12 @@ static inline void addInfoRequest(RequestProcessor &rp,
     rp.AddRequest(make_unique<InfoRequest>(cmd, name, id));
 }
 
-#define CHECK_BUS_RESPONSE(resp, err, name, stops, ustops, len, curv) \
+#define CHECK_BUS_RESPONSE(resp, err, name, stops, ustops, len, curv, id) \
 { \
     auto busPtr = static_cast<BusResponse *>(resp.get()); \
     ASSERT_EQUAL(busPtr->Name(), name); \
     ASSERT_EQUAL(busPtr->Error(), err); \
+    ASSERT_EQUAL(busPtr->Id(), id); \
     if (!err) \
     { \
         ASSERT_EQUAL(busPtr->Stops(), stops); \
@@ -59,11 +60,12 @@ static inline void addInfoRequest(RequestProcessor &rp,
     } \
 }
 
-#define CHECK_STOP_RESPONSE(resp, err, name, buses) \
+#define CHECK_STOP_RESPONSE(resp, err, name, buses, id) \
 { \
     auto busPtr = static_cast<StopResponse *>(resp.get()); \
     ASSERT_EQUAL(busPtr->Name(), name); \
     ASSERT_EQUAL(busPtr->Error(), err); \
+    ASSERT_EQUAL(busPtr->Id(), id); \
     if (!err) \
     { \
         ASSERT_EQUAL(busPtr->Buses(), buses); \
@@ -90,20 +92,20 @@ void RequestProcessorTest_Smoke()
         {"Biryulyovo Zapadnoye", "Universam", "Rossoshanskaya ulitsa", "Biryulyovo Zapadnoye"});
     addStopRequest(rp, "Rossoshanskaya ulitsa", 55.595579, 37.605757);
     addStopRequest(rp, "Prazhskaya", 55.611678, 37.603831);
-    addInfoRequest(rp, "256");
-    addInfoRequest(rp, "750");
-    addInfoRequest(rp, "751");
-    addInfoRequest(rp, "Samara", true);
-    addInfoRequest(rp, "Prazhskaya", true);
-    addInfoRequest(rp, "Biryulyovo Zapadnoye", true);
+    addInfoRequest(rp, "256", false, 25);
+    addInfoRequest(rp, "750", false, 322);
+    addInfoRequest(rp, "751", false, 789789);
+    addInfoRequest(rp, "Samara", true, 44);
+    addInfoRequest(rp, "Prazhskaya", true, 685u);
+    addInfoRequest(rp, "Biryulyovo Zapadnoye", true, 65542u);
     auto responses = rp.Proceed();
-    CHECK_BUS_RESPONSE(responses[0], false, "256", 6u, 5u, 5950u, 1.361239);
-    CHECK_BUS_RESPONSE(responses[1], false, "750", 5u, 3u, 27600u, 1.318084);
-    CHECK_BUS_RESPONSE(responses[2], true, "751", 0u, 0u, 0u, 1);
+    CHECK_BUS_RESPONSE(responses[0], false, "256", 6u, 5u, 5950u, 1.361239, 25u);
+    CHECK_BUS_RESPONSE(responses[1], false, "750", 5u, 3u, 27600u, 1.318084, 322u);
+    CHECK_BUS_RESPONSE(responses[2], true, "751", 0u, 0u, 0u, 1, 789789u);
 
     set<string> testBuses;
-    CHECK_STOP_RESPONSE(responses[3], true, "Samara", testBuses);
-    CHECK_STOP_RESPONSE(responses[4], false, "Prazhskaya", testBuses);
+    CHECK_STOP_RESPONSE(responses[3], true, "Samara", testBuses, 44u);
+    CHECK_STOP_RESPONSE(responses[4], false, "Prazhskaya", testBuses, 685u);
     testBuses = {"256", "828"};
-    CHECK_STOP_RESPONSE(responses[5], false, "Biryulyovo Zapadnoye", testBuses);
+    CHECK_STOP_RESPONSE(responses[5], false, "Biryulyovo Zapadnoye", testBuses, 65542u);
 }

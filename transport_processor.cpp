@@ -7,8 +7,8 @@
 using namespace std;
 
 TransportProcessor::TransportProcessor(ostream &out, shared_ptr<RequestParser> parser) :
-_out(out),
-_parser(parser)
+    _out(out),
+    _parser(parser)
 {
 }
 
@@ -30,10 +30,20 @@ void TransportProcessor::ReadInfoRequests(istream &in)
 
 void TransportProcessor::PrintResponses()
 {
-    for (auto &i : _processor.Proceed())
+    auto resps = _processor.Proceed();
+    _parser->BeforePrinting(_out);
+
+    for (auto it = resps.begin(); it != resps.end(); it = next(it))
     {
-        _parser->PrintResponse(move(i), _out);
+        _parser->PrintResponse(move(*it), _out);
+
+        if (next(it) != resps.end())
+        {
+            _parser->BetweenResponses(_out);
+        }
     }
+
+    _parser->AfterPrinting(_out);
 }
 
 void RunTransportProcessor(shared_ptr<RequestParser> parser, istream &in, ostream &out)

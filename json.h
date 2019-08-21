@@ -29,7 +29,7 @@ public:
     }
     int AsInt() const
     {
-        return std::get<int>(*this);
+        return static_cast<int>(std::get<long double>(*this));
     }
     const auto &AsString() const
     {

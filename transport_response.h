@@ -14,6 +14,7 @@ public:
     virtual ~TransportResponse() = default;
     const std::string &Name() const { return _name; }
     bool Error() const { return _error; }
+    unsigned int Id() const { return _id; }
     virtual void Proceed(std::ostream &out) const  = 0;
     virtual void ProceedJSON(std::ostream &out) const = 0;
 protected:

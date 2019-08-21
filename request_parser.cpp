@@ -106,6 +106,22 @@ vector<string> JsonParser::GetInfoRequests(istream &in) const
 {
     return splitJson(in);
 }
+
+void JsonParser::BeforePrinting(ostream &out) const
+{
+    out << "[\n";
+}
+
+void JsonParser::BetweenResponses(ostream &out) const
+{
+    out << ",\n";
+}
+
+void JsonParser::AfterPrinting(ostream &out) const
+{
+    out << "\n]";
+}
+
 unique_ptr<TransportRequest> JsonParser::ParseDataRequest(const string &str) const
 {
     stringstream ss(str);
@@ -160,12 +176,15 @@ unique_ptr<TransportRequest> JsonParser::ParseInfoRequest(const string &str) con
     }
 
     return make_unique<InfoRequest>(RequestCmd::STOP,
-                                        req.at("name").AsString(),
-                                        req.at("id").AsInt());
+                                    req.at("name").AsString(),
+                                    req.at("id").AsInt());
 }
-void JsonParser::PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const
+void JsonParser::PrintResponse(unique_ptr<TransportResponse> response, ostream &out) const
 {
-    out << response.get() << endl;
+    if (response)
+    {
+        response->ProceedJSON(out);
+    }
 }
 
 std::vector<std::string> JsonParser::splitJson(std::istream &in) const
@@ -176,7 +195,7 @@ std::vector<std::string> JsonParser::splitJson(std::istream &in) const
     getline(in, req, '[');
     req.clear();
 
-    while(in)
+    while (in)
     {
         char c = in.get();
 

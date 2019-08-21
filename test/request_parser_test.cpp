@@ -78,6 +78,24 @@ void RequestParserTest_DataJson()
     ASSERT(doublesEqual(stop->Site().longitude, 37.645687));
     unordered_map<string, unsigned int> dists = {{"Rossoshanskaya ulitsa", 5600}, {"Biryulyovo Tovarnaya", 900}};
     ASSERT_EQUAL(stop->Distances(), dists);
+
+    str = R"({
+      "type": "Stop",
+      "road_distances": {},
+      "longitude": 37.645687,
+      "name": "Universam",
+      "latitude": 55.587655
+    })";
+
+    request = parser.ParseDataRequest(str);
+    ASSERT_EQUAL(RequestType::DATA, request->Type());
+    ASSERT_EQUAL(RequestCmd::STOP, request->Cmd());
+    ASSERT_EQUAL("Universam", request->Name());
+    stop = static_cast<StopRequest *>(request.get());
+    ASSERT(doublesEqual(stop->Site().latitude, 55.587655));
+    ASSERT(doublesEqual(stop->Site().longitude, 37.645687));
+    dists = {};
+    ASSERT_EQUAL(stop->Distances(), dists);
 }
 void RequestParserTest_InfoJson()
 {

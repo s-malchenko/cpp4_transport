@@ -1,5 +1,6 @@
 #include "transport_response.h"
 #include <iomanip>
+#include <iterator>
 
 using namespace std;
 const string TransportResponse::ERROR_MESSAGE("not found");
@@ -29,9 +30,24 @@ void BusResponse::Proceed(ostream &out) const
     out << endl;
 }
 
+
 void BusResponse::ProceedJSON(ostream &out) const
 {
-    out << endl;
+    out << "{ \"request_id\": " << _id << ", ";
+
+    if (_error)
+    {
+        out << "\"error_message\": \"" << ERROR_MESSAGE << '"';
+    }
+    else
+    {
+        out << "\"route_length\": " <<  _routeLength << ", " <<
+        "\"curvature\": " << setprecision(6) << _curvature << ", " <<
+        "\"stop_count\": " << _stopCount << ", " <<
+        "\"unique_stop_count\": " << _uniqueStopCount;
+    }
+
+    out << " }";
 }
 
 BusResponse &BusResponse::Length(unsigned int len)
@@ -99,7 +115,30 @@ void StopResponse::Proceed(ostream &out) const
 
 void StopResponse::ProceedJSON(std::ostream &out) const
 {
-    out << endl;
+    out << "{ \"request_id\": " << _id << ", ";
+
+    if (_error)
+    {
+        out << "\"error_message\": \"" << ERROR_MESSAGE << '"';
+    }
+    else
+    {
+        out << "\"buses\": [";
+
+        for (auto it = _buses.begin(); it != _buses.end(); it = next(it))
+        {
+            out << '"' << *it << '"';
+
+            if (next(it) != _buses.end())
+            {
+                out << ", ";
+            }
+        }
+
+        out << "]";
+    }
+
+    out << " }";
 }
 
 StopResponse &StopResponse::Buses(std::set<string> buses)
