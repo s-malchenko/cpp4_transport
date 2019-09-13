@@ -6,17 +6,27 @@
 using namespace std;
 using namespace InputParser;
 
-vector<string> StandardParser::GetDataRequests(istream &in) const
+RequestContainer StandardParser::GetRequests(istream &in) const
 {
-    return getRequests(in);
+    RequestContainer result;
+    auto reqs = getRequests(in);
+
+    for (const auto &i : reqs)
+    {
+        result.data.push_back(move(ParseDataRequest(i)));
+    }
+
+    reqs = getRequests(in);
+
+    for (const auto &i : reqs)
+    {
+        result.info.push_back(move(ParseInfoRequest(i)));
+    }
+
+    return move(result);
 }
 
-vector<string> StandardParser::GetInfoRequests(istream &in) const
-{
-    return getRequests(in);
-}
-
-vector<string> StandardParser::getRequests(istream &in) const
+vector<string> StandardParser::getRequests(istream &in)
 {
     size_t num;
     string request;
@@ -98,14 +108,24 @@ void StandardParser::PrintResponse(unique_ptr<TransportResponse> response, ostre
 
 using namespace Json;
 
-vector<string> JsonParser::GetDataRequests(istream &in) const
+RequestContainer JsonParser::GetRequests(istream &in) const
 {
-    return splitJson(in);
-}
+    RequestContainer result;
+    auto doc = Load(in);
+    const auto &dataReqs = doc.GetRoot().AsMap().at("base_requests").AsArray();
+    const auto &infoReqs = doc.GetRoot().AsMap().at("stat_requests").AsArray();
 
-vector<string> JsonParser::GetInfoRequests(istream &in) const
-{
-    return splitJson(in);
+    for (const auto &i : dataReqs)
+    {
+        result.data.push_back(parseDataRequest(i));
+    }
+
+    for (const auto &i : infoReqs)
+    {
+        result.data.push_back(parseInfoRequest(i));
+    }
+
+    return move(result);
 }
 
 void JsonParser::BeforePrinting(ostream &out) const
@@ -127,7 +147,13 @@ unique_ptr<TransportRequest> JsonParser::ParseDataRequest(const string &str) con
 {
     stringstream ss(str);
     auto doc = Load(ss);
-    const auto &req = doc.GetRoot().AsMap();
+
+    return parseDataRequest(doc.GetRoot());
+}
+
+unique_ptr<TransportRequest> JsonParser::parseDataRequest(const Node &node)
+{
+    const auto &req = node.AsMap();
     unique_ptr<TransportRequest> result;
 
     if (req.at("type").AsString() == "Bus")
@@ -163,11 +189,18 @@ unique_ptr<TransportRequest> JsonParser::ParseDataRequest(const string &str) con
 
     return move(result);
 }
+
 unique_ptr<TransportRequest> JsonParser::ParseInfoRequest(const string &str) const
 {
     stringstream ss(str);
     auto doc = Load(ss);
-    const auto &req = doc.GetRoot().AsMap();
+
+    return parseInfoRequest(doc.GetRoot());
+}
+
+unique_ptr<TransportRequest> JsonParser::parseInfoRequest(const Node &node)
+{
+    const auto &req = node.AsMap();
 
     if (req.at("type").AsString() == "Bus")
     {
@@ -186,45 +219,4 @@ void JsonParser::PrintResponse(unique_ptr<TransportResponse> response, ostream &
     {
         response->ProceedJSON(out);
     }
-}
-
-std::vector<std::string> JsonParser::splitJson(std::istream &in) const
-{
-    int bracketsCount = 0;
-    string req;
-    vector<string> result;
-    getline(in, req, '[');
-    req.clear();
-
-    while (in)
-    {
-        char c = in.get();
-
-        if (c == '{')
-        {
-            ++bracketsCount;
-        }
-
-        if (bracketsCount > 0)
-        {
-            req.push_back(c);
-        }
-
-        if (c == '}')
-        {
-            --bracketsCount;
-
-            if (bracketsCount == 0)
-            {
-                result.push_back(move(req));
-            }
-        }
-
-        if (bracketsCount <= 0 && c == ']')
-        {
-            break;
-        }
-    }
-
-    return result;
 }

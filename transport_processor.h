@@ -13,8 +13,7 @@ class TransportProcessor
 {
 public:
     TransportProcessor(std::ostream &out, std::shared_ptr<RequestParser> parser);
-    void ReadDataRequests(std::istream &in);
-    void ReadInfoRequests(std::istream &in);
+    void ReadRequests(std::istream &in);
     void PrintResponses();
 private:
     std::ostream &_out;

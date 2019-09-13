@@ -9,12 +9,17 @@
 #include <istream>
 #include <ostream>
 
+struct RequestContainer
+{
+    std::vector<std::unique_ptr<TransportRequest>> data;
+    std::vector<std::unique_ptr<TransportRequest>> info;
+};
+
 class RequestParser
 {
 public:
     virtual ~RequestParser() = default;
-    virtual std::vector<std::string> GetDataRequests(std::istream &in) const = 0;
-    virtual std::vector<std::string> GetInfoRequests(std::istream &in) const = 0;
+    virtual RequestContainer GetRequests(std::istream &in) const = 0;
     virtual void BeforePrinting(std::ostream &out) const { if (!out) return; }
     virtual void BetweenResponses(std::ostream &out) const { if (!out) return; }
     virtual void AfterPrinting(std::ostream &out) const { if (!out) return; }
@@ -27,21 +32,19 @@ class StandardParser : public RequestParser
 {
 public:
     virtual ~StandardParser() = default;
-    virtual std::vector<std::string> GetDataRequests(std::istream &in) const override;
-    virtual std::vector<std::string> GetInfoRequests(std::istream &in) const override;
+    virtual RequestContainer GetRequests(std::istream &in) const override;
     virtual std::unique_ptr<TransportRequest> ParseDataRequest(const std::string &str) const override;
     virtual std::unique_ptr<TransportRequest> ParseInfoRequest(const std::string &str) const override;
     virtual void PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const override;
 private:
-    std::vector<std::string> getRequests(std::istream &in) const;
+    static std::vector<std::string> getRequests(std::istream &in);
 };
 
 class JsonParser : public RequestParser
 {
 public:
     virtual ~JsonParser() = default;
-    virtual std::vector<std::string> GetDataRequests(std::istream &in) const override;
-    virtual std::vector<std::string> GetInfoRequests(std::istream &in) const override;
+    virtual RequestContainer GetRequests(std::istream &in) const override;
     virtual void BeforePrinting(std::ostream &out) const override;
     virtual void BetweenResponses(std::ostream &out) const override;
     virtual void AfterPrinting(std::ostream &out) const override;
@@ -49,5 +52,7 @@ public:
     virtual std::unique_ptr<TransportRequest> ParseInfoRequest(const std::string &str) const override;
     virtual void PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const override;
 private:
-    std::vector<std::string> splitJson(std::istream &in) const;
+    static std::vector<std::string> splitJson(std::istream &in);
+    static std::unique_ptr<TransportRequest> parseDataRequest(const Json::Node &node);
+    static std::unique_ptr<TransportRequest> parseInfoRequest(const Json::Node &node);
 };

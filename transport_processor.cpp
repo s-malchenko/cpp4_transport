@@ -12,19 +12,18 @@ TransportProcessor::TransportProcessor(ostream &out, shared_ptr<RequestParser> p
 {
 }
 
-void TransportProcessor::ReadDataRequests(istream &in)
+void TransportProcessor::ReadRequests(istream &in)
 {
-    for (const auto &i : _parser->GetDataRequests(in))
-    {
-        _processor.AddRequest(_parser->ParseDataRequest(i));
-    }
-}
+    auto [data, info] = _parser->GetRequests(in);
 
-void TransportProcessor::ReadInfoRequests(istream &in)
-{
-    for (const auto &i : _parser->GetInfoRequests(in))
+    for (auto &i : data)
     {
-        _processor.AddRequest(_parser->ParseInfoRequest(i));
+        _processor.AddRequest(move(i));
+    }
+
+    for (auto &i : info)
+    {
+        _processor.AddRequest(move(i));
     }
 }
 
@@ -50,7 +49,6 @@ void RunTransportProcessor(shared_ptr<RequestParser> parser, istream &in, ostrea
 {
     TransportProcessor tp(out, parser);
 
-    tp.ReadDataRequests(in);
-    tp.ReadInfoRequests(in);
+    tp.ReadRequests(in);
     tp.PrintResponses();
 }
