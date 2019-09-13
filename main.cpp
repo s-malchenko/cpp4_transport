@@ -1,11 +1,19 @@
-// #include "transport_test.h"
+#include "transport_test.h"
 #include "transport_processor.h"
+#include <string_view>
 
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
-    // TestTransport();
-    RunTransportProcessor(make_shared<JsonParser>());
+    if (argc == 2 && string_view(argv[1]) == "test")
+    {
+        TestTransport();
+    }
+    else
+    {
+        RunTransportProcessor(make_shared<JsonParser>());
+    }
+
     return 0;
 }

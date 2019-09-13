@@ -1,4 +1,5 @@
 #include "json.h"
+#include "test_double_precision.h"
 using namespace std;
 
 namespace Json
@@ -11,6 +12,45 @@ Document::Document(Node root) : root(move(root))
 const Node &Document::GetRoot() const
 {
     return root;
+}
+
+bool operator!=(const Node &lhs, const Node &rhs)
+{
+    return !(lhs == rhs);
+}
+
+bool operator==(const Node &lhs, const Node &rhs)
+{
+    if (lhs.Index() != rhs.Index())
+    {
+        return false;
+    }
+
+    switch (lhs.Index())
+    {
+    case 0: // vector<Node>
+        return lhs.AsArray() == rhs.AsArray();
+
+    case 1: // map<string, Node>
+        return lhs.AsMap() == rhs.AsMap();
+
+    case 2: // int
+        return lhs.AsInt() == rhs.AsInt();
+
+    case 3: // string
+        return lhs.AsString() == rhs.AsString();
+
+    case 4: // bool
+        return lhs.AsBool() == rhs.AsBool();
+
+    case 5: // long double
+        return doublesEqual(lhs.AsDouble(), rhs.AsDouble());
+
+    default:
+        return false;
+    }
+
+    return true;
 }
 
 Node LoadNode(istream &input);

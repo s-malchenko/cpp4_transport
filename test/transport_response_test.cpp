@@ -1,6 +1,7 @@
 #include "transport_response_test.h"
 #include "transport_response.h"
 #include "test_runner.h"
+#include "json_compare.h"
 #include <sstream>
 
 using namespace std;
@@ -10,6 +11,14 @@ using namespace std;
     stringstream out; \
     resp.Proceed(out); \
     ASSERT_EQUAL(out.str(), result); \
+}
+
+#define TEST_PROCEED_RESPONSE_JSON(resp, result) \
+{ \
+    stringstream out; \
+    stringstream resultStream(result); \
+    resp.ProceedJSON(out); \
+    ASSERT(JsonCompare(out, resultStream)); \
 }
 
 void TransportResponseTest_BusProceed()
@@ -41,4 +50,35 @@ void TransportResponseTest_StopProceed()
     response = StopResponse("Pyater ochka").Buses(buses);
     TEST_PROCEED_RESPONSE(response,
                           "Stop Pyater ochka: buses bus1 bus3 the coolest bus\n");
+}
+
+void TransportResponseTest_BusProceedJson()
+{
+    auto response = BusResponse("654", 68, true);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 68, "error_message": "not found" })");
+
+    response = BusResponse("33", 88525).Length(5658).Curvature(1.56).Stops(89).UniqueStops(56);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 88525, "route_length": 5658, "curvature": 1.56, "stop_count": 89, "unique_stop_count": 56 })");
+
+    response = BusResponse("256", 65465465).Length(5950).Curvature(1.361239).Stops(6).UniqueStops(5);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 65465465, "route_length": 5950, "curvature": 1.361239, "stop_count": 6, "unique_stop_count": 5 })");
+}
+
+void TransportResponseTest_StopProceedJson()
+{
+    auto response = StopResponse("654", 65985, true);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 65985, "error_message": "not found" })");
+
+    response = StopResponse("99", 122335467);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 122335467, "buses": [] })");
+
+    set<string> buses = {"bus3", "bus1", "the coolest bus"};
+    response = StopResponse("Pyater ochka", 1193762553).Buses(buses);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({ "request_id": 1193762553, "buses": ["bus1", "bus3", "the coolest bus"]})");
 }

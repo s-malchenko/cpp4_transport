@@ -16,6 +16,7 @@ add_executable( transport
                 test/bus_route_test.cpp
                 test/bus_stop_test.cpp
                 test/input_parser_test.cpp
+                test/json_compare.cpp
                 test/request_parser_test.cpp
                 test/request_processor_test.cpp
                 test/transport_processor_test.cpp

@@ -44,7 +44,15 @@ public:
         return std::get<long double>(*this);
     }
 
+    size_t Index() const
+    {
+        return this->index();
+    }
+
 };
+
+bool operator==(const Node &lhs, const Node &rhs);
+bool operator!=(const Node &lhs, const Node &rhs);
 
 class Document
 {

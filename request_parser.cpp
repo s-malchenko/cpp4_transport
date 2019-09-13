@@ -33,6 +33,7 @@ vector<string> StandardParser::getRequests(istream &in) const
 
     return result;
 }
+
 unique_ptr<TransportRequest> StandardParser::ParseDataRequest(const std::string &str) const
 {
     string_view line(str);
