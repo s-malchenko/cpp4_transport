@@ -16,6 +16,7 @@ enum RequestCmd
 {
     BUS,
     STOP,
+    SETTINGS,
 };
 
 class TransportRequest
@@ -44,7 +45,7 @@ public:
 class DataRequest : public TransportRequest
 {
 public:
-    DataRequest(RequestCmd cmd, const std::string &name, unsigned int id = 0);
+    DataRequest(RequestCmd cmd, const std::string &name = "", unsigned int id = 0);
     virtual ~DataRequest() = default;
 };
 
@@ -74,4 +75,16 @@ public:
 private:
     Coordinates _site;
     std::unordered_map<std::string, unsigned int> _distances;
+};
+
+class SettingsRequest : public DataRequest
+{
+public:
+    SettingsRequest(unsigned int waitTime, unsigned int velocity);
+    virtual ~SettingsRequest() = default;
+    unsigned int WaitTime() const;
+    unsigned int Velocity() const;
+private:
+    const unsigned int _waitTime;
+    const unsigned int _velocity;
 };

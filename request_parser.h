@@ -8,6 +8,7 @@
 #include <string>
 #include <istream>
 #include <ostream>
+#include <optional>
 
 struct RequestContainer
 {
@@ -51,8 +52,10 @@ public:
     virtual std::unique_ptr<TransportRequest> ParseDataRequest(const std::string &str) const override;
     virtual std::unique_ptr<TransportRequest> ParseInfoRequest(const std::string &str) const override;
     virtual void PrintResponse(std::unique_ptr<TransportResponse> response, std::ostream &out) const override;
+    std::optional<std::unique_ptr<TransportRequest>> GetSettings(const std::string &str) const;
 private:
     static std::vector<std::string> splitJson(std::istream &in);
     static std::unique_ptr<TransportRequest> parseDataRequest(const Json::Node &node);
     static std::unique_ptr<TransportRequest> parseInfoRequest(const Json::Node &node);
+    static std::optional<std::unique_ptr<TransportRequest>> getSettings(const Json::Node &node);
 };

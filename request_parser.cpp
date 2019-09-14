@@ -112,6 +112,12 @@ RequestContainer JsonParser::GetRequests(istream &in) const
 {
     RequestContainer result;
     auto doc = Load(in);
+    auto settings = getSettings(doc.GetRoot());
+
+    if (settings != nullopt)
+    {
+        result.data.push_back(move(settings.value()));
+    }
     const auto &dataReqs = doc.GetRoot().AsMap().at("base_requests").AsArray();
     const auto &infoReqs = doc.GetRoot().AsMap().at("stat_requests").AsArray();
 
@@ -213,10 +219,36 @@ unique_ptr<TransportRequest> JsonParser::parseInfoRequest(const Node &node)
                                     req.at("name").AsString(),
                                     req.at("id").AsInt());
 }
+
 void JsonParser::PrintResponse(unique_ptr<TransportResponse> response, ostream &out) const
 {
     if (response)
     {
         response->ProceedJSON(out);
     }
+}
+
+optional<unique_ptr<TransportRequest>> JsonParser::GetSettings(const string &str) const
+{
+    stringstream ss(str);
+    auto doc = Load(ss);
+    return getSettings(doc.GetRoot());
+}
+
+optional<unique_ptr<TransportRequest>> JsonParser::getSettings(const Node &node)
+{
+    const auto &n = node.AsMap();
+    optional<unique_ptr<TransportRequest>> result = nullopt;
+
+    auto it = n.find("routing_settings");
+
+    if (it != n.end())
+    {
+        result = make_unique<SettingsRequest>(
+                     it->second.AsMap().at("bus_wait_time").AsInt(),
+                     it->second.AsMap().at("bus_velocity").AsInt()
+                 );
+    }
+
+    return result;
 }

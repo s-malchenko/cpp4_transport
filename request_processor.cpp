@@ -71,6 +71,7 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
         }
 
         case RequestCmd::STOP:
+        {
             auto it = _stopsBase.find(request->Name());
 
             if (it == _stopsBase.end())
@@ -86,6 +87,11 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
                 response = move(stopResp);
             }
 
+            break;
+        }
+
+        case RequestCmd::SETTINGS:
+        default:
             break;
         }
 

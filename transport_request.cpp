@@ -64,3 +64,21 @@ StopRequest &StopRequest::Site(Coordinates value)
 
 std::unordered_map<std::string, unsigned int> &StopRequest::Distances() { return _distances; }
 Coordinates StopRequest::Site() const { return _site; }
+
+
+SettingsRequest::SettingsRequest(unsigned int waitTime, unsigned int velocity) :
+    DataRequest(RequestCmd::SETTINGS),
+    _waitTime(waitTime),
+    _velocity(velocity)
+{
+}
+
+unsigned int SettingsRequest::WaitTime() const 
+{
+    return _waitTime;
+}
+
+unsigned int SettingsRequest::Velocity() const
+{
+    return _velocity;
+}
