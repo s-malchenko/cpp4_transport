@@ -6,6 +6,7 @@ add_executable( transport
                 main.cpp
                 bus_route.cpp
                 bus_stop.cpp
+                complex_route.cpp
                 input_parser.cpp
                 json.cpp
                 request_parser.cpp
@@ -15,6 +16,7 @@ add_executable( transport
                 transport_request.cpp
                 test/bus_route_test.cpp
                 test/bus_stop_test.cpp
+                test/complex_route_test.cpp
                 test/input_parser_test.cpp
                 test/json_compare.cpp
                 test/request_parser_test.cpp
