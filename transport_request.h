@@ -17,6 +17,7 @@ enum RequestCmd
     BUS,
     STOP,
     SETTINGS,
+    ROUTE,
 };
 
 class TransportRequest
@@ -40,6 +41,16 @@ class InfoRequest : public TransportRequest
 public:
     InfoRequest(RequestCmd cmd, const std::string &name, unsigned int id = 0);
     virtual ~InfoRequest() = default;
+};
+
+class RouteRequest : public InfoRequest
+{
+public:
+    RouteRequest(const std::string &from, const std::string &to, unsigned int id = 0);
+    virtual ~RouteRequest() = default;
+    const std::string &Destination() const;
+private:
+    std::string _destination;
 };
 
 class DataRequest : public TransportRequest

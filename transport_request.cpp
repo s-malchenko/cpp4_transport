@@ -20,6 +20,17 @@ InfoRequest::InfoRequest(RequestCmd cmd, const string &name, unsigned int id) :
 {
 }
 
+RouteRequest::RouteRequest(const std::string &from, const std::string &to, unsigned int id) :
+    InfoRequest(RequestCmd::ROUTE, from, id),
+    _destination(to)
+{
+}
+
+const std::string &RouteRequest::Destination() const
+{
+    return _destination;
+}
+
 DataRequest::DataRequest(RequestCmd cmd, const string &name, unsigned int id) :
     TransportRequest(RequestType::DATA, cmd, name, id)
 {
@@ -73,7 +84,7 @@ SettingsRequest::SettingsRequest(unsigned int waitTime, unsigned int velocity) :
 {
 }
 
-unsigned int SettingsRequest::WaitTime() const 
+unsigned int SettingsRequest::WaitTime() const
 {
     return _waitTime;
 }

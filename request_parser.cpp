@@ -214,6 +214,12 @@ unique_ptr<TransportRequest> JsonParser::parseInfoRequest(const Node &node)
                                         req.at("name").AsString(),
                                         req.at("id").AsInt());
     }
+    else if (req.at("type").AsString() == "Route")
+    {
+        return make_unique<RouteRequest>(req.at("from").AsString(),
+                                         req.at("to").AsString(),
+                                         req.at("id").AsInt());
+    }
 
     return make_unique<InfoRequest>(RequestCmd::STOP,
                                     req.at("name").AsString(),

@@ -456,7 +456,7 @@ void RequestParserTest_SettingsJson()
     ASSERT_EQUAL(6u, settings->WaitTime());
     ASSERT_EQUAL(40u, settings->Velocity());
 
-        str = R"({
+    str = R"({
   "routing_settings": {
     "bus_wait_time": 4545652,
     "bus_velocity": 77777777
@@ -623,4 +623,22 @@ void RequestParserTest_SettingsJson()
     settings = static_cast<SettingsRequest *>(request.value().get());
     ASSERT_EQUAL(4545652u, settings->WaitTime());
     ASSERT_EQUAL(77777777u, settings->Velocity());
+}
+
+void RequestParserTest_RouteJson()
+{
+    JsonParser parser;
+    string str = R"({
+  "type": "Route",
+  "from": "Biryulyovo Zapadnoye",
+  "to": "Universam",
+  "id": 4
+})";
+    auto request = parser.ParseInfoRequest(str);
+    ASSERT_EQUAL(RequestType::INFO, request->Type());
+    ASSERT_EQUAL(RequestCmd::ROUTE, request->Cmd());
+    ASSERT_EQUAL(4u, request->Id());
+    ASSERT_EQUAL("Biryulyovo Zapadnoye", request->Name());
+    auto route = static_cast<RouteRequest *>(request.get());
+    ASSERT_EQUAL("Universam", route->Destination());
 }
