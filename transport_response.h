@@ -1,8 +1,12 @@
 #pragma once
+
+#include "complex_route.h"
+
 #include <map>
 #include <ostream>
 #include <string>
 #include <set>
+#include <memory>
 
 class TransportResponse
 {
@@ -57,4 +61,17 @@ public:
     const std::set<std::string> &Buses() const;
 private:
     std::set<std::string> _buses;
+};
+
+class RouteResponse : public TransportResponse
+{
+public:
+    RouteResponse(unsigned int id = 0, const std::string name = "");
+    virtual ~RouteResponse() = default;
+    virtual void Proceed(std::ostream &out) const override { if (!out) return; }
+    virtual void ProceedJSON(std::ostream &out) const override;
+    RouteResponse &Route(std::shared_ptr<ComplexRoute> route);
+private:
+    std::shared_ptr<ComplexRoute> _route;
+    static void proceedRouteItemJson(std::shared_ptr<RouteItem> item, std::ostream &out);
 };

@@ -2,7 +2,10 @@
 
 using namespace std;
 
-RouteItem::RouteItem(RouteItemType type, long double time) : _type(type), _time(time)
+RouteItem::RouteItem(RouteItemType type, long double time, string name) :
+    _type(type),
+    _time(time),
+    _name(move(name))
 {
 }
 
@@ -16,41 +19,25 @@ long double RouteItem::Time() const
     return _time;
 }
 
+const string &RouteItem::Name() const
+{
+    return _name;
+}
+
 WaitItem::WaitItem(long double time, string name) :
-    RouteItem(RouteItemType::WAIT, time),
-    _stopName(move(name))
+    RouteItem(RouteItemType::WAIT, time, move(name))
 {
 }
 
-const string &WaitItem::Name() const
+BusItem::BusItem(long double time, string name, size_t spanCount) :
+    RouteItem(RouteItemType::RIDE, time, move(name)),
+    _spanCount(spanCount)
 {
-    return _stopName;
-}
-
-BusItem::BusItem(long double time) : RouteItem(RouteItemType::BUS, time)
-{
-}
-
-BusItem &BusItem::SpanCount(size_t count)
-{
-    _spanCount = count;
-    return *this;
-}
-
-BusItem &BusItem::Name(std::string name)
-{
-    _busName = move(name);
-    return *this;
 }
 
 size_t BusItem::SpanCount() const
 {
     return _spanCount;
-}
-
-const std::string &BusItem::Name() const
-{
-    return _busName;
 }
 
 ComplexRoute &ComplexRoute::AddItem(std::shared_ptr<RouteItem> item)

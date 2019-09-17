@@ -37,4 +37,5 @@ void TestTransport()
     RUN_TEST(tr, TransportResponseTest_StopProceed);
     RUN_TEST(tr, TransportResponseTest_BusProceedJson);
     RUN_TEST(tr, TransportResponseTest_StopProceedJson);
+    RUN_TEST(tr, TransportResponseTest_RouteProceedJson);
 }

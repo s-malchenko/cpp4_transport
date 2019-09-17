@@ -82,3 +82,39 @@ void TransportResponseTest_StopProceedJson()
     TEST_PROCEED_RESPONSE_JSON(response,
                                R"({ "request_id": 1193762553, "buses": ["bus1", "bus3", "the coolest bus"]})");
 }
+
+void TransportResponseTest_RouteProceedJson()
+{
+    auto response = RouteResponse(4);
+    auto route = make_shared<ComplexRoute>();
+
+    response.Route(route);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({
+        "error_message": "not found",
+        "request_id": 4
+    })");
+
+    route->AddItem(make_shared<WaitItem>(6, "Biryulyovo Zapadnoye"));
+    route->AddItem(make_shared<BusItem>(5.235, "297", 2));
+
+    response.Route(route);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({
+        "total_time": 11.235,
+        "items": [
+            {
+                "time": 6.0,
+                "type": "Wait",
+                "stop_name": "Biryulyovo Zapadnoye"
+            },
+            {
+                "span_count": 2,
+                "bus": "297",
+                "type": "Bus",
+                "time": 5.235
+            }
+        ],
+        "request_id": 4
+    })");
+}

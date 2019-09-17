@@ -7,41 +7,36 @@
 enum RouteItemType
 {
     WAIT,
-    BUS,
+    RIDE,
 };
 
 class RouteItem
 {
 public:
-    RouteItem(RouteItemType type, long double time);
+    RouteItem(RouteItemType type, long double time, std::string name);
     virtual ~RouteItem() = default;
     RouteItemType Type() const;
     long double Time() const;
+    const std::string &Name() const;
 private:
     const RouteItemType _type;
     long double _time;
+    const std::string _name;
 };
 
 class WaitItem : public RouteItem
 {
 public:
     WaitItem(long double time, std::string name);
-    const std::string &Name() const;
-private:
-    std::string _stopName;
 };
 
 class BusItem : public RouteItem
 {
 public:
-    BusItem(long double time);
-    BusItem &SpanCount(size_t count);
-    BusItem &Name(std::string name);
+    BusItem(long double time, std::string name, size_t spanCount);
     size_t SpanCount() const;
-    const std::string &Name() const;
 private:
-    size_t _spanCount;
-    std::string _busName;
+    const size_t _spanCount;
 };
 
 class ComplexRoute

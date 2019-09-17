@@ -14,13 +14,11 @@ void ComplexRouteTest_Smoke()
     actualRoute.push_back(wait);
     route.AddItem(wait);
 
-    auto bus = make_shared<BusItem>(0.5674);
-    bus->Name("Bus ololo").SpanCount(45);
+    auto bus = make_shared<BusItem>(0.5674, "Bus ololo", 45);
     actualRoute.push_back(bus);
     route.AddItem(bus);
 
-    bus = make_shared<BusItem>(159.2);
-    bus->Name("a new bus").SpanCount(1);
+    bus = make_shared<BusItem>(159.2, "a new bus", 1);
     actualRoute.push_back(bus);
     route.AddItem(bus);
 
