@@ -91,7 +91,7 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
         }
 
         case RequestCmd::SETTINGS:
-        default:
+        case RequestCmd::ROUTE:
             break;
         }
 
@@ -110,5 +110,13 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
         BusStop stop(stopRequest->Name(), site);
         auto [it, inserted] = _stopsBase.insert(make_pair(stopRequest->Name(), stop));
         it->second.AssignDistances(move(stopRequest->Distances()));
+    }
+    else if (request->Cmd() == RequestCmd::SETTINGS)
+    {
+        auto settingsRequest = static_cast<SettingsRequest *>(request.get());
+        if (!settingsRequest)
+        {
+            return;
+        }
     }
 }

@@ -22,6 +22,8 @@ public:
     unsigned int GetDistance(const StopsTable &stopsBase) const;
     long double GetCurvature(const StopsTable &stopsBase) const;
     const std::string &GetNumber() const;
+    const std::vector<const std::string *> &GetStops() const;
+    bool GetRing() const;
 protected:
     const std::string _number;
     const bool _ring;
@@ -29,11 +31,9 @@ protected:
     std::vector<const std::string *> _routeStops;
     std::unordered_set<std::string> _uniqueStops;
     static Distance distanceBetween(const std::string &stop1,
-                                  const std::string &stop2,
-                                  const StopsTable &stopsBase);
-    Distance computeDistance(std::vector<const std::string *>::const_iterator first,
-                                  std::vector<const std::string *>::const_iterator last,
-                                  const StopsTable &stopsBase) const;
+                                    const std::string &stop2,
+                                    const StopsTable &stopsBase);
+    Distance computeDistance(const StopsTable &stopsBase) const;
 };
 
 using BusTable = std::unordered_map<std::string, BusRoute>;

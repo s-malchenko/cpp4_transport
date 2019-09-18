@@ -64,7 +64,7 @@ unsigned int BusRoute::GetDistance(const StopsTable &stopsBase) const
 {
     if (!_distance)
     {
-        _distance = computeDistance(_routeStops.begin(), _routeStops.end(), stopsBase);
+        _distance = computeDistance(stopsBase);
     }
 
     return _distance.value().real;
@@ -81,6 +81,16 @@ const std::string &BusRoute::GetNumber() const
     return _number;
 }
 
+const vector<const string*> &BusRoute::GetStops() const
+{
+    return _routeStops;
+}
+
+bool BusRoute::GetRing() const
+{
+    return _ring;
+}
+
 Distance BusRoute::distanceBetween(const std::string &stop1,
                                    const std::string &stop2,
                                    const StopsTable &stopsBase)
@@ -88,10 +98,11 @@ Distance BusRoute::distanceBetween(const std::string &stop1,
     return stopsBase.at(stop1).DistanceTo(stopsBase.at(stop2));
 }
 
-Distance BusRoute::computeDistance(std::vector<const std::string *>::const_iterator first,
-                                   std::vector<const std::string *>::const_iterator last,
-                                   const StopsTable &stopsBase) const
+Distance BusRoute::computeDistance(const StopsTable &stopsBase) const
 {
+    auto first = _routeStops.begin();
+    auto last = _routeStops.end();
+
     if (first == last)
     {
         return {};
