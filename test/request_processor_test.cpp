@@ -45,6 +45,21 @@ static inline void addInfoRequest(RequestProcessor &rp,
     rp.AddRequest(make_unique<InfoRequest>(cmd, name, id));
 }
 
+static inline void addSettingsRequest(RequestProcessor &rp,
+                                  unsigned int time,
+                                  unsigned int velocity)
+{
+    rp.AddRequest(make_unique<SettingsRequest>(time, velocity));
+}
+
+static inline void addRouteRequest(RequestProcessor &rp,
+                                  const string &from,
+                                  const string &to,
+                                  unsigned int id = 0)
+{
+    rp.AddRequest(make_unique<RouteRequest>(from, to, id));
+}
+
 #define CHECK_BUS_RESPONSE(resp, err, name, stops, ustops, len, curv, id) \
 { \
     auto busPtr = static_cast<BusResponse *>(resp.get()); \
@@ -69,6 +84,17 @@ static inline void addInfoRequest(RequestProcessor &rp,
     if (!err) \
     { \
         ASSERT_EQUAL(busPtr->Buses(), buses); \
+    } \
+}
+
+#define ROUTE_ITEMS_EQUAL(lhs, rhs) \
+{ \
+    ASSERT_EQUAL(lhs->Type(), rhs->Type()); \
+    ASSERT_EQUAL(lhs->Name(), rhs->Name()); \
+    ASSERT(doublesEqual(lhs->Time(), rhs->Time())); \
+    if (lhs->Type() == RouteItemType::RIDE) \
+    { \
+        ASSERT_EQUAL(reinterpret_cast<BusItem *>(lhs.get())->SpanCount(), reinterpret_cast<BusItem *>(rhs.get())->SpanCount()); \
     } \
 }
 
@@ -108,4 +134,67 @@ void RequestProcessorTest_Smoke()
     CHECK_STOP_RESPONSE(responses[4], false, "Prazhskaya", testBuses, 685u);
     testBuses = {"256", "828"};
     CHECK_STOP_RESPONSE(responses[5], false, "Biryulyovo Zapadnoye", testBuses, 65542u);
+}
+
+void RequestProcessorTest_SimpleRoutes()
+{
+    RequestProcessor rp;
+    addSettingsRequest(rp, 14, 20);
+
+    addStopRequest(rp, "stop1", 55.611087, 37.20829, {{"stop2", 500}});
+    addStopRequest(rp, "stop2", 55.595884, 37.209755, {{"stop3", 100}});
+    addStopRequest(rp, "stop3", 55.632761, 37.333324, {{"stop2", 300}});
+    addBusRequest(rp, "256", false, {"stop1", "stop2", "stop3"});
+
+    addStopRequest(rp, "stop4", 55.581065, 37.64839, {{"stop5", 1000}});
+    addStopRequest(rp, "stop5", 55.587655, 37.645687, {{"stop6", 800}});
+    addStopRequest(rp, "stop6", 55.592028, 37.653656, {{"stop4", 1240}});
+    addBusRequest(rp, "ring", true, {"stop4", "stop5", "stop6"});
+
+    addRouteRequest(rp, "stop1", "stop3", 56982);
+    addRouteRequest(rp, "stop3", "stop2", 6666);
+    addRouteRequest(rp, "stop4", "stop6", 9989);
+    addRouteRequest(rp, "stop6", "stop5", 3);
+    addRouteRequest(rp, "stop3", "stop4", 54);
+
+    auto responses = rp.Proceed();
+    ASSERT_EQUAL(responses.size(), 5u);
+
+    // stop1 to stop3
+    auto resp = static_cast<RouteResponse *>(responses[0].get());
+    ASSERT_EQUAL(resp->Id(), 56982u);
+    ASSERT_EQUAL(resp->Route()->TotalTime(), 44);
+    auto items = resp->Route()->Items();
+    ASSERT_EQUAL(items.size(), 2u);
+    ROUTE_ITEMS_EQUAL(items[0], make_unique<WaitItem>(14, "stop1"));
+    ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(30, "256", 2));
+
+    // stop3 to stop2
+    resp = static_cast<RouteResponse *>(responses[1].get());
+    ASSERT_EQUAL(resp->Id(), 6666u);
+    ASSERT_EQUAL(resp->Route()->TotalTime(), 29);
+    items = resp->Route()->Items();
+    ASSERT_EQUAL(items.size(), 2u);
+    ROUTE_ITEMS_EQUAL(items[0], make_unique<WaitItem>(14, "stop3"));
+    ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(15, "256", 1));
+
+    // stop4 to stop6
+    resp = static_cast<RouteResponse *>(responses[2].get());
+    ASSERT_EQUAL(resp->Id(), 9989u);
+    ASSERT_EQUAL(resp->Route()->TotalTime(), 104);
+    items = resp->Route()->Items();
+    ASSERT_EQUAL(items.size(), 2u);
+    ROUTE_ITEMS_EQUAL(items[0], make_unique<WaitItem>(14, "stop4"));
+    ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(90, "ring", 2));
+
+    // stop6 to stop5
+    resp = static_cast<RouteResponse *>(responses[3].get());
+    ASSERT_EQUAL(resp->Id(), 3u);
+    ASSERT_EQUAL(resp->Route()->TotalTime(), 140);
+    items = resp->Route()->Items();
+    ASSERT_EQUAL(items.size(), 4u);
+    ROUTE_ITEMS_EQUAL(items[0], make_unique<WaitItem>(14, "stop6"));
+    ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(62, "ring", 1));
+    ROUTE_ITEMS_EQUAL(items[2], make_unique<WaitItem>(14, "stop4"));
+    ROUTE_ITEMS_EQUAL(items[3], make_unique<BusItem>(50, "ring", 1));
 }

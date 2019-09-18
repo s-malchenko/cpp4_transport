@@ -170,6 +170,11 @@ RouteResponse &RouteResponse::Route(shared_ptr<ComplexRoute> route)
     return *this;
 }
 
+shared_ptr<const ComplexRoute> RouteResponse::Route() const
+{
+    return _route;
+}
+
 void RouteResponse::ProceedJSON(ostream &out) const
 {
     out << "{ \"request_id\": " << _id << ", ";

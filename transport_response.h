@@ -71,6 +71,7 @@ public:
     virtual void Proceed(std::ostream &out) const override { if (!out) return; }
     virtual void ProceedJSON(std::ostream &out) const override;
     RouteResponse &Route(std::shared_ptr<ComplexRoute> route);
+    std::shared_ptr<const ComplexRoute> Route() const;
 private:
     std::shared_ptr<ComplexRoute> _route;
     static void proceedRouteItemJson(std::shared_ptr<RouteItem> item, std::ostream &out);

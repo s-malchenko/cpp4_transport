@@ -31,6 +31,7 @@ void TestTransport()
     RUN_TEST(tr, RequestParserTest_SettingsJson);
     RUN_TEST(tr, RequestParserTest_RouteJson);
     RUN_TEST(tr, RequestProcessorTest_Smoke);
+    RUN_TEST(tr, RequestProcessorTest_SimpleRoutes);
     RUN_TEST(tr, TransportProcessorTest_Run);
     RUN_TEST(tr, TransportProcessorTest_RunJson);
     RUN_TEST(tr, TransportResponseTest_BusProceed);
