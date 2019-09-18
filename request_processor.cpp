@@ -37,6 +37,11 @@ void RequestProcessor::prepareDatabase()
 {
     FillStopsInfo(_busesBase, _stopsBase);
     AssignDistances(_distances, _stopsBase);
+
+    if (_router)
+    {
+        _router->PrepareRouter(_stopsBase, _busesBase);
+    }
 }
 
 void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
@@ -90,9 +95,22 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
             break;
         }
 
-        case RequestCmd::SETTINGS:
         case RequestCmd::ROUTE:
-            break;
+        {
+            if (!_router)
+            {
+                return;
+            }
+
+            auto routeResp = make_unique<RouteResponse>(request->Id());
+            auto routeRequest = static_cast<RouteRequest *>(request.get());
+            routeResp->Route(_router->GetRoute(routeRequest->Name(),
+                                              routeRequest->Destination()));
+
+        }
+        case RequestCmd::SETTINGS:
+        default:
+            return; // don't push empty ptr
         }
 
         _responses.push_back(move(response));
@@ -114,9 +132,7 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
     else if (request->Cmd() == RequestCmd::SETTINGS)
     {
         auto settingsRequest = static_cast<SettingsRequest *>(request.get());
-        if (!settingsRequest)
-        {
-            return;
-        }
+        _router = make_unique<RouteFinder>(settingsRequest->WaitTime(),
+                                           settingsRequest->Velocity());
     }
 }

@@ -11,6 +11,7 @@ add_executable( transport
                 json.cpp
                 request_parser.cpp
                 request_processor.cpp
+                route_finder.cpp
                 transport_processor.cpp
                 transport_response.cpp
                 transport_request.cpp

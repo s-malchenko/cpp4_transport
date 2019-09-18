@@ -4,6 +4,7 @@
 #include "transport_response.h"
 #include "bus_stop.h"
 #include "bus_route.h"
+#include "route_finder.h"
 
 #include <memory>
 #include <vector>
@@ -19,6 +20,7 @@ private:
     std::vector<std::unique_ptr<TransportRequest>> _data;
     std::vector<std::unique_ptr<TransportRequest>> _info;
     std::vector<std::unique_ptr<TransportResponse>> _responses;
+    std::unique_ptr<RouteFinder> _router;
     StopsTable _stopsBase;
     BusTable _busesBase;
     DistanceTable _distances;
