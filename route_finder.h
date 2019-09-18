@@ -67,7 +67,7 @@ private:
                 const auto &finalStop = **itTo;
 
                 ++currentSpans;
-                currentDistance += stops.at(prevStop).DistanceTo(finalStop).real;
+                currentDistance += stops.at(prevStop).DistanceTo(stops.at(finalStop)).real;
                 auto stopsPair = std::make_pair(std::string(initialStop), std::string(finalStop));
                 auto it = _directRoutes.find(stopsPair);
 
@@ -81,12 +81,12 @@ private:
             if (ring)
             {
                 // creating edge from next(itFrom) to first
-                // no need to increas span count, but distance subtraction required
+                // no need to increase span count, but distance subtraction required
                 const auto &newInitialStop = **next(itFrom);
                 const auto &prevStop = **std::prev(last);
                 const auto &finalStop = **first;
-                currentDistance += stops.at(prevStop).DistanceTo(finalStop).real;
-                currentDistance -= stops.at(initialStop).DistanceTo(newInitialStop).real;
+                currentDistance += stops.at(prevStop).DistanceTo(stops.at(finalStop)).real;
+                currentDistance -= stops.at(initialStop).DistanceTo(stops.at(newInitialStop)).real;
                 auto stopsPair = std::make_pair(std::string(newInitialStop), std::string(finalStop));
                 auto it = _directRoutes.find(stopsPair);
 

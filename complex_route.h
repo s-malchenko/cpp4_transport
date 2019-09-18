@@ -44,8 +44,11 @@ class ComplexRoute
 public:
     ComplexRoute &AddItem(std::shared_ptr<RouteItem> item);
     long double TotalTime() const;
+    bool Valid() const;
+    ComplexRoute &Valid(bool val);
     const std::vector<std::shared_ptr<RouteItem>> &Items() const;
 private:
     std::vector<std::shared_ptr<RouteItem>> _items;
     long double _totalTime = 0;
+    bool _valid = false;
 };

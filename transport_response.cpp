@@ -158,7 +158,7 @@ RouteResponse &RouteResponse::Route(shared_ptr<ComplexRoute> route)
 {
     _route = route;
 
-    if (!_route || _route->Items().empty())
+    if (!_route || !_route->Valid())
     {
         _error = true; // invalid route means route not found
     }

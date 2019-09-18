@@ -56,3 +56,14 @@ const std::vector<std::shared_ptr<RouteItem>> &ComplexRoute::Items() const
 {
     return _items;
 }
+
+bool ComplexRoute::Valid() const
+{
+    return _valid;
+}
+
+ComplexRoute &ComplexRoute::Valid(bool val)
+{
+    _valid = val;
+    return *this;
+}

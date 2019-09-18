@@ -1,5 +1,7 @@
 #include "json.h"
 #include "test_double_precision.h"
+#include <cctype>
+
 using namespace std;
 
 namespace Json
@@ -32,18 +34,19 @@ bool operator==(const Node &lhs, const Node &rhs)
         return lhs.AsArray() == rhs.AsArray();
 
     case 1: // map<string, Node>
+        if (lhs.AsMap().count("total_time")) // very innovation for route comparison
+        {
+            return lhs.AsMap().at("total_time") == rhs.AsMap().at("total_time");
+        }
         return lhs.AsMap() == rhs.AsMap();
 
-    case 2: // int
-        return lhs.AsInt() == rhs.AsInt();
-
-    case 3: // string
+    case 2: // string
         return lhs.AsString() == rhs.AsString();
 
-    case 4: // bool
+    case 3: // bool
         return lhs.AsBool() == rhs.AsBool();
 
-    case 5: // long double
+    case 4: // long double
         return doublesEqual(lhs.AsDouble(), rhs.AsDouble());
 
     default:
@@ -73,18 +76,36 @@ Node LoadArray(istream &input)
 
 Node LoadNumber(istream &input)
 {
-    long double resultDouble = 0;
-    input >> resultDouble;
-    return Node(resultDouble);
+    char c;
+    string str;
+    input >> c;
+
+    while (c == '-' ||
+            c == '.' ||
+            isdigit(c))
+    {
+        str.push_back(c);
+        input >> c;
+    }
+
+    input.putback(c);
+    return Node(stold(str));
 }
 
 Node LoadBool(istream &input)
 {
     string str;
-    input >> str;
     bool value = false;
+    char c;
 
-    if (str.substr(0, 4) == "true")
+    do
+    {
+        input >> c;
+        str.push_back(c);
+    }
+    while (c != 'e');
+
+    if (str == "true")
     {
         value = true;
     }

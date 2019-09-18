@@ -34,6 +34,7 @@ void TestTransport()
     RUN_TEST(tr, RequestProcessorTest_SimpleRoutes);
     RUN_TEST(tr, TransportProcessorTest_Run);
     RUN_TEST(tr, TransportProcessorTest_RunJson);
+    RUN_TEST(tr, TransportProcessorTest_RunJsonExamples);
     RUN_TEST(tr, TransportResponseTest_BusProceed);
     RUN_TEST(tr, TransportResponseTest_StopProceed);
     RUN_TEST(tr, TransportResponseTest_BusProceedJson);

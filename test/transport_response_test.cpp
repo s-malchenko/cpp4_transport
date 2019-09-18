@@ -95,6 +95,14 @@ void TransportResponseTest_RouteProceedJson()
         "request_id": 4
     })");
 
+    route->Valid(true);
+    response.Route(route);
+    TEST_PROCEED_RESPONSE_JSON(response,
+                               R"({
+        "total_time": 0,
+        "items": [],
+        "request_id": 4
+    })");
     route->AddItem(make_shared<WaitItem>(6, "Biryulyovo Zapadnoye"));
     route->AddItem(make_shared<BusItem>(5.235, "297", 2));
 

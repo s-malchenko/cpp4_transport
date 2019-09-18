@@ -4,6 +4,7 @@
 #include "json_compare.h"
 
 #include <sstream>
+#include <fstream>
 #include <string>
 
 using namespace std;
@@ -56,6 +57,8 @@ Stop Biryulyovo Zapadnoye: buses 256 828
     auto parser = make_shared<JsonParser>(); \
     stringstream out; \
     RunTransportProcessor(parser, in, out); \
+    ofstream debug("debug.json"); \
+    debug << out.str(); \
     ASSERT(JsonCompare(out, expected)); \
 }
 
@@ -237,4 +240,29 @@ void TransportProcessorTest_RunJson()
     { "request_id": 122335467, "buses": [] },
     { "request_id": 1193762553, "buses": ["256", "828"]}
 ])");
+
+    // some difficult parsing test
+    inStr = stringstream(R"({"routing_settings": {"bus_wait_time": 6, "bus_velocity": 40},"base_requests": [{"type": "Bus", "name": "297", "stops": ["Biryulyovo Zapadnoye", "Biryulyovo Tovarnaya", "Universam", "Biryulyovo Zapadnoye"], "is_roundtrip": true}, {"type": "Bus", "name": "635", "stops": ["Biryulyovo Tovarnaya", "Universam", "Prazhskaya"], "is_roundtrip": false}, {"type": "Stop", "name": "Biryulyovo Zapadnoye", "latitude": 55.574371, "longitude": 37.6517, "road_distances": {"Biryulyovo Tovarnaya": 2600}}, {"type": "Stop", "name": "Universam", "latitude": 55.587655, "longitude": 37.645687, "road_distances": {"Biryulyovo Tovarnaya": 1380, "Biryulyovo Zapadnoye": 2500, "Prazhskaya": 4650}}, {"type": "Stop", "name": "Biryulyovo Tovarnaya", "latitude": 55.592028, "longitude": 37.653656, "road_distances": {"Universam": 890}}, {"type": "Stop", "name": "Prazhskaya", "latitude": 55.611717, "longitude": 37.603938, "road_distances": {}}], "stat_requests": [{"id": 847104961, "type": "Bus", "name": "297"}, {"id": 1509410151, "type": "Bus", "name": "635"}, {"id": 1910120855, "type": "Stop", "name": "Universam"}, {"id": 1152333432, "type": "Route", "from": "Biryulyovo Zapadnoye", "to": "Universam"}, {"id": 744653477, "type": "Route", "from": "Biryulyovo Zapadnoye", "to": "Prazhskaya"}]})");
+    stringstream out;
+    auto parser = make_shared<JsonParser>();
+    RunTransportProcessor(parser, inStr, out);
 }
+
+#define TEST_RUN_JSON_FILES(name1, name2) \
+{ \
+    auto inFile = ifstream(name1); \
+    ASSERT((bool)inFile); \
+    auto outFile = ifstream(name2); \
+    ASSERT((bool)outFile); \
+    TEST_RUN_JSON(inFile, outFile); \
+}
+
+void TransportProcessorTest_RunJsonExamples()
+{
+    TEST_RUN_JSON_FILES("../test/graph_test/in1.json", "../test/graph_test/out1.json");
+    TEST_RUN_JSON_FILES("../test/graph_test/in2.json", "../test/graph_test/out2.json");
+    TEST_RUN_JSON_FILES("../test/graph_test/in5.json", "../test/graph_test/out5.json");
+    TEST_RUN_JSON_FILES("../test/graph_test/in3.json", "../test/graph_test/out3.json");
+    TEST_RUN_JSON_FILES("../test/graph_test/in4.json", "../test/graph_test/out4.json");
+}
+

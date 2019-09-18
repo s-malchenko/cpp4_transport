@@ -43,6 +43,7 @@ shared_ptr<ComplexRoute> RouteFinder::GetRoute(const string &from, const string 
 
     if (gRoute)
     {
+        result->Valid(true);
         const auto &route = gRoute.value();
         for (size_t i = 0; i < route.edge_count; ++i)
         {
@@ -112,7 +113,7 @@ void RouteFinder::fillGraphEdges()
     {
         auto edge = Edge<long double> {_stopsToVertices[stops.first],
                                        _stopsToVertices[stops.second],
-                                       (route.distance / static_cast<long double>(_velocity)) + _waitTime
+                                       (route.distance * 3.0l / 50 / _velocity) + _waitTime
                                       };
         _edgesToRoutes[_graph->AddEdge(edge)] = route;
     }
