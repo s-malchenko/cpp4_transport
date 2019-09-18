@@ -21,7 +21,7 @@ shared_ptr<ComplexRoute> RouteFinder::GetRoute(const string &from, const string 
 {
     if (from != to)
     {
-        return {};
+        return make_shared<ComplexRoute>();
     }
 
     return make_shared<ComplexRoute>();

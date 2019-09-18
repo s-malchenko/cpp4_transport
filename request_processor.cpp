@@ -106,7 +106,8 @@ void RequestProcessor::proceedRequest(unique_ptr<TransportRequest> request)
             auto routeRequest = static_cast<RouteRequest *>(request.get());
             routeResp->Route(_router->GetRoute(routeRequest->Name(),
                                               routeRequest->Destination()));
-
+            response = move(routeResp);
+            break;
         }
         case RequestCmd::SETTINGS:
         default:

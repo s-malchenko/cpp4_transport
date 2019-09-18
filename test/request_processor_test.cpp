@@ -3,7 +3,6 @@
 #include "test_runner.h"
 #include "test_double_precision.h"
 #include <utility>
-#include <iostream>
 
 using namespace std;
 
@@ -161,6 +160,7 @@ void RequestProcessorTest_SimpleRoutes()
     ASSERT_EQUAL(responses.size(), 5u);
 
     // stop1 to stop3
+    ASSERT((bool)responses[0]);
     auto resp = static_cast<RouteResponse *>(responses[0].get());
     ASSERT_EQUAL(resp->Id(), 56982u);
     ASSERT_EQUAL(resp->Route()->TotalTime(), 44);
@@ -170,6 +170,7 @@ void RequestProcessorTest_SimpleRoutes()
     ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(30, "256", 2));
 
     // stop3 to stop2
+    ASSERT((bool)responses[1]);
     resp = static_cast<RouteResponse *>(responses[1].get());
     ASSERT_EQUAL(resp->Id(), 6666u);
     ASSERT_EQUAL(resp->Route()->TotalTime(), 29);
@@ -179,6 +180,7 @@ void RequestProcessorTest_SimpleRoutes()
     ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(15, "256", 1));
 
     // stop4 to stop6
+    ASSERT((bool)responses[2]);
     resp = static_cast<RouteResponse *>(responses[2].get());
     ASSERT_EQUAL(resp->Id(), 9989u);
     ASSERT_EQUAL(resp->Route()->TotalTime(), 104);
@@ -188,6 +190,7 @@ void RequestProcessorTest_SimpleRoutes()
     ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(90, "ring", 2));
 
     // stop6 to stop5
+    ASSERT((bool)responses[3]);
     resp = static_cast<RouteResponse *>(responses[3].get());
     ASSERT_EQUAL(resp->Id(), 3u);
     ASSERT_EQUAL(resp->Route()->TotalTime(), 140);
@@ -197,4 +200,8 @@ void RequestProcessorTest_SimpleRoutes()
     ROUTE_ITEMS_EQUAL(items[1], make_unique<BusItem>(62, "ring", 1));
     ROUTE_ITEMS_EQUAL(items[2], make_unique<WaitItem>(14, "stop4"));
     ROUTE_ITEMS_EQUAL(items[3], make_unique<BusItem>(50, "ring", 1));
+
+    // stop3 to stop4, no route
+    ASSERT((bool)responses[4]);
+    ASSERT(responses[4]->Error());
 }
