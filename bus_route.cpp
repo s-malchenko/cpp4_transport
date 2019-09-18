@@ -123,13 +123,13 @@ Distance BusRoute::computeDistance(const StopsTable &stopsBase) const
     }
     else
     {
-        last = prev(start);
-        first = prev(first);
-        second = prev(second);
+        auto rlast = _routeStops.rend();
+        auto rfirst = _routeStops.rbegin();
+        auto rsecond = next(rfirst);
 
-        for (; first != last; second = first, first = prev(first))
+        for (; rsecond != rlast; rfirst = rsecond, rsecond = next(rfirst))
         {
-            result += distanceBetween(**second, **first, stopsBase);
+            result += distanceBetween(**rfirst, **rsecond, stopsBase);
         }
     }
 

@@ -26,5 +26,6 @@ add_executable( transport
                 test/transport_response_test.cpp
                 test/transport_test.cpp)
 
+target_compile_definitions(transport PRIVATE _GLIBCXX_DEBUG=1 _GLIBCXX_DEBUG_PEDANTIC=1)
 target_include_directories(transport PRIVATE ./ test/)
 target_compile_options(transport PRIVATE -std=c++1z -O2 -Wall -Werror -Wextra)
