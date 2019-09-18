@@ -26,7 +26,7 @@ struct DirectRoute
 {
     std::string bus;        // a bus to ride
     size_t spanCount;       // number of stops between initial and final stop
-    unsigned long distance;  // distance
+    unsigned long distance; // distance
 };
 
 class RouteFinder
@@ -47,4 +47,55 @@ private:
     void fillDirectRoutes(const StopsTable &stops, const BusTable &buses);
     void assignVerticesId(const StopsTable &stops);
     void fillGraphEdges();
+
+    template<typename Iterator>
+    void assignDirectRoutesOneWay(Iterator first,
+                                  Iterator last,
+                                  const StopsTable &stops,
+                                  const std::string &name,
+                                  bool ring = false)
+    {
+        for (auto itFrom = first; std::next(itFrom) != last; ++itFrom)
+        {
+            unsigned long currentDistance = 0;
+            size_t currentSpans = 0;
+            const auto &initialStop = **itFrom;
+
+            for (auto itTo = std::next(itFrom); itTo != last; ++itTo)
+            {
+                const auto &prevStop = **std::prev(itTo);
+                const auto &finalStop = **itTo;
+
+                ++currentSpans;
+                currentDistance += stops.at(prevStop).DistanceTo(finalStop).real;
+                auto stopsPair = std::make_pair(std::string(initialStop), std::string(finalStop));
+                auto it = _directRoutes.find(stopsPair);
+
+                if (it == _directRoutes.end() ||
+                        it->second.distance > currentDistance)
+                {
+                    _directRoutes[ std::move(stopsPair) ] = {name, currentSpans, currentDistance};
+                }
+            }
+
+            if (ring)
+            {
+                // creating edge from next(itFrom) to first
+                // no need to increas span count, but distance subtraction required
+                const auto &newInitialStop = **next(itFrom);
+                const auto &prevStop = **std::prev(last);
+                const auto &finalStop = **first;
+                currentDistance += stops.at(prevStop).DistanceTo(finalStop).real;
+                currentDistance -= stops.at(initialStop).DistanceTo(newInitialStop).real;
+                auto stopsPair = std::make_pair(std::string(newInitialStop), std::string(finalStop));
+                auto it = _directRoutes.find(stopsPair);
+
+                if (it == _directRoutes.end() ||
+                        it->second.distance > currentDistance)
+                {
+                    _directRoutes[ std::move(stopsPair) ] = {name, currentSpans, currentDistance};
+                }
+            }
+        }
+    }
 };

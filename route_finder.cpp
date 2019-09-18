@@ -80,28 +80,12 @@ void RouteFinder::fillDirectRoutes(const StopsTable &stops, const BusTable &buse
             continue;
         }
 
-        for (auto itFrom = bStops.begin(); next(itFrom) != bStops.end(); ++itFrom)
+        assignDirectRoutesOneWay(bStops.begin(), bStops.end(), stops, bus.first, bus.second.GetRing());
+
+        // reversed route if not ring
+        if (!bus.second.GetRing())
         {
-            unsigned long currentDistance = 0;
-            size_t currentSpans = 0;
-            const auto &initialStop = **itFrom;
-
-            for (auto itTo = next(itFrom); itTo != bStops.end(); ++itTo)
-            {
-                const auto &prevStop = **prev(itTo);
-                const auto &finalStop = **itTo;
-
-                ++currentSpans;
-                currentDistance += stops.at(prevStop).DistanceTo(finalStop).real;
-                auto stopsPair = make_pair(string(initialStop), string(finalStop));
-                auto it = _directRoutes.find(stopsPair);
-
-                if (it == _directRoutes.end() ||
-                        it->second.distance > currentDistance)
-                {
-                    _directRoutes[ move(stopsPair) ] = {bus.first, currentSpans, currentDistance};
-                }
-            }
+            assignDirectRoutesOneWay(bStops.rbegin(), bStops.rend(), stops, bus.first);
         }
     }
 }

@@ -141,7 +141,7 @@ void RequestProcessorTest_SimpleRoutes()
     addSettingsRequest(rp, 14, 20);
 
     addStopRequest(rp, "stop1", 55.611087, 37.20829, {{"stop2", 500}});
-    addStopRequest(rp, "stop2", 55.595884, 37.209755, {{"stop3", 100}});
+    addStopRequest(rp, "stop2", 55.595884, 37.209755, {{"stop3", 100}, {"stop1", 500}});
     addStopRequest(rp, "stop3", 55.632761, 37.333324, {{"stop2", 300}});
     addBusRequest(rp, "256", false, {"stop1", "stop2", "stop3"});
 
